@@ -1,0 +1,41 @@
+﻿@model IEnumerable<MyDuoCards.Models.DBModels.User>
+
+@{
+	ViewData["Title"] = "Index";
+}
+
+<h1>Registered users</h1>
+@if (User is not null)
+{
+	<div>
+		<h3>@User.Identity!.Name</h3>
+		<a asp-action="Logout" asp-controller="Account">Logout</a>
+	</div>
+}
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.Login)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Email)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Password)
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>@item.Login</td>
+				<td>@item.Email</td>
+				<td>@item.Password</td>
+			</tr>
+		}
+	</tbody>
+</table>
