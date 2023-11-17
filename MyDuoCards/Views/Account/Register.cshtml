@@ -1,0 +1,40 @@
+﻿@model MyDuoCards.Models.ViewModels.RegisterModel
+
+@{
+	ViewData["Title"] = "Register";
+}
+
+<h1>Register</h1>
+<hr />
+@if (ViewData.ModelState.ContainsKey("isRegFailed"))
+{
+	foreach (var err in @ViewData.ModelState["isRegFailed"].Errors)
+	{
+		<h3>@err.ErrorMessage</h3>
+	}
+}
+<form asp-action="Register" asp-controller="Account">
+	<div class="form-group">
+		<label asp-for="Login"></label>
+		<input type="text" asp-for="Login" />
+	</div>
+	<div class="form-group">
+		<label asp-for="Email"></label>
+		<input type="email" asp-for="Email" />
+	</div>
+	<div class="form-group">
+		<label asp-for="Password"></label>
+		<input type="password" asp-for="Password" />
+	</div>
+	<div class="form-group">
+		<label asp-for="ConfirmPassword"></label>
+		<input type="password" asp-for="ConfirmPassword" />
+	</div>
+	<div class="form-group">
+		<input type="submit" value="Register" />
+	</div>
+</form>
+
+<div>
+	<a asp-action="Login">Back to Login</a>
+</div>
