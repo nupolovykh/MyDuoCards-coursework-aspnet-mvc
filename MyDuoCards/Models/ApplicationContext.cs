@@ -7,11 +7,16 @@ namespace MyDuoCards.Models
     public class ApplicationContext : DbContext
     {
         public DbSet<User> Users { get; set; } = null!;
+		public DbSet<Role> Roles { get; set; } = null!;
+		public DbSet<UserDictionary> UserDictionaries { get; set; } = null!;
+		public DbSet<EuWord> EuWords { get; set; } = null!;
+		public DbSet<RuWord> RuWords { get; set; } = null!;
 
-        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
+
+		public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
             //Database.EnsureDeleted();
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
