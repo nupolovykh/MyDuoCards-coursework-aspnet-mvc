@@ -17,13 +17,13 @@
 	<thead>
 		<tr>
 			<th>
-				@Html.DisplayNameFor(model => model.Login)
+				@Html.DisplayNameFor(model => model.UserLogin)
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.Email)
+				@Html.DisplayNameFor(model => model.UserEmail)
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.Password)
+				@Html.DisplayNameFor(model => model.UserPassword)
 			</th>
 			<th></th>
 		</tr>
@@ -32,9 +32,9 @@
 		@foreach (var item in Model)
 		{
 			<tr>
-				<td>@item.Login</td>
-				<td>@item.Email</td>
-				<td>@item.Password</td>
+				<td>@item.UserLogin</td>
+				<td>@item.UserEmail</td>
+				<td>@item.UserPassword</td>
 			</tr>
 		}
 	</tbody>

@@ -27,6 +27,17 @@ namespace MyDuoCards.Controllers
 			_mssql = MScontext;
 			//_sqlite = MScontext;
 			//_mssql = Litecontext;
+
+			//var UsualUser = new Role();				//start for connection
+			//UsualUser.RoleName = "Usual User";
+			//_sqlite.Roles.Add(UsualUser);
+			//var VipUser = new Role();
+			//VipUser.RoleName = "Vip User";
+			//_sqlite.Roles.Add(VipUser);
+			//var Admin = new Role();
+			//Admin.RoleName = "Admin";
+			//_sqlite.Roles.Add(Admin);
+			//_sqlite.SaveChanges();
 		}
 
 		// GET: Account/Register
@@ -44,16 +55,16 @@ namespace MyDuoCards.Controllers
 				ModelState.AddModelError("isRegFailed", "Passwords incorrect");
 				return View(regUser);
 			}
-			if (_sqlite.Users.Where(u => u.Login == regUser.Login || u.Login == regUser.Email || u.Email == regUser.Login || u.Email == regUser.Email).Any())
+			if (_sqlite.Users.Where(u => u.UserLogin == regUser.Login || u.UserLogin == regUser.Login || u.UserEmail == regUser.Login || u.UserEmail == regUser.Email).Any())
 			{
 				ModelState.AddModelError("isRegFailed", "Login or Email already taken");
 				return View(regUser);
 			}
 
 			var user = new User();
-			user.Login = regUser.Login;
-			user.Email = regUser.Email;
-			user.Password = regUser.Password.ToHash();
+			user.UserLogin = regUser.Login;
+			user.UserEmail = regUser.Email;
+			user.UserPassword = regUser.Password.ToHash();
 
 			_sqlite.Users.Add(user);
 			_sqlite.SaveChangesAsync().Wait();
@@ -79,7 +90,7 @@ namespace MyDuoCards.Controllers
 		public async Task<IActionResult> Login(LoginModel loginUser, bool failed = false)
 		{
 
-			var userToLogin = await _sqlite.Users.Where(u => u.Login == loginUser.LoginOrEmail || u.Email == loginUser.LoginOrEmail).SingleOrDefaultAsync();
+			var userToLogin = await _sqlite.Users.Where(u => u.UserLogin == loginUser.LoginOrEmail || u.UserEmail == loginUser.LoginOrEmail).SingleOrDefaultAsync();
 			//_logger.LogInformation(userToLogin.ToString());
 			if (userToLogin is null)
 			{
@@ -87,7 +98,7 @@ namespace MyDuoCards.Controllers
 				ModelState.AddModelError("isLoginFailed", "Bad login or email");
 				return View(loginUser);
 			}
-			if (userToLogin?.Password != loginUser.Password.ToHash())
+			if (userToLogin?.UserPassword != loginUser.Password.ToHash())
 			{
 				_logger.LogWarning("At {time} Failed login attempt was made with {login}", DateTime.Now.ToString("u"), loginUser.LoginOrEmail);
 				ModelState.AddModelError("isLoginFailed", "Bad password");
