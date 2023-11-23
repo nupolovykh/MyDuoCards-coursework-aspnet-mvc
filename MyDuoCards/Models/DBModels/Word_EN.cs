@@ -2,12 +2,14 @@
 
 namespace MyDuoCards.Models.DBModels
 {
-	public class EuWord
+	public class EnWord
 	{
 		[Key]
-		public int EnWordId { get; set; }
-		public ICollection<UserDictionary> UserDictionaries { get; } = new List<UserDictionary>();
+		public int Id { get; set; }
+        public string? EnWriting { get; set; }
 
-		public string? EnWriting { get; set; }
-	}
+        public ICollection<Dictionary> UserDictionaries { get; set; }
+        public RuWord RuWord { get; set; }
+
+    }
 }

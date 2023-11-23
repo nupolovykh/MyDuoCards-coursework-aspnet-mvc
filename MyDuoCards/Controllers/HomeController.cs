@@ -12,30 +12,21 @@ namespace MyDuoCards.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationContext _sqlite;
-        private readonly MsApplicationContext _mssql;
 
-        public HomeController(ILogger<HomeController> logger, MsApplicationContext MScontext, ApplicationContext Litecontext)
+        public HomeController(ILogger<HomeController> logger, ApplicationContext Litecontext)
         {
             _logger = logger;
-            _mssql = MScontext;
             _sqlite = Litecontext;
         }
 
 		public async Task<IActionResult> Index()
 		{
-			//return View(await _mssql.Users.ToListAsync());
 			return View(await _sqlite.Users.ToListAsync());
 		}
 
 		public IActionResult Privacy()
         {
             return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

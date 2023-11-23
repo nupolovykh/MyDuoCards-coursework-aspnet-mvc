@@ -8,8 +8,8 @@ namespace MyDuoCards.Models.DBModels
 	{
 		[Key]
 		public int RoleId { get; set; }
-		public ICollection<User> Users { get; } = new List<User>();
-
 		public string? RoleName { get; set; }
-	}
+
+        public ICollection<User> Users { get; set; }
+    }
 }

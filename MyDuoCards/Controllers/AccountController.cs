@@ -16,28 +16,11 @@ namespace MyDuoCards.Controllers
 	{
 		private readonly ILogger<HomeController> _logger;
 		private readonly ApplicationContext _sqlite;
-		private readonly MsApplicationContext _mssql;
-		//private readonly ApplicationContext _mssql;
-		//private readonly MsApplicationContext _sqlite;
 
-		public AccountController(ILogger<HomeController> logger, MsApplicationContext MScontext, ApplicationContext Litecontext)
+		public AccountController(ILogger<HomeController> logger, ApplicationContext Litecontext)
 		{
 			_logger = logger;
 			_sqlite = Litecontext;
-			_mssql = MScontext;
-			//_sqlite = MScontext;
-			//_mssql = Litecontext;
-
-			//var UsualUser = new Role();				//start for connection
-			//UsualUser.RoleName = "Usual User";
-			//_sqlite.Roles.Add(UsualUser);
-			//var VipUser = new Role();
-			//VipUser.RoleName = "Vip User";
-			//_sqlite.Roles.Add(VipUser);
-			//var Admin = new Role();
-			//Admin.RoleName = "Admin";
-			//_sqlite.Roles.Add(Admin);
-			//_sqlite.SaveChanges();
 		}
 
 		// GET: Account/Register
@@ -68,13 +51,6 @@ namespace MyDuoCards.Controllers
 
 			_sqlite.Users.Add(user);
 			_sqlite.SaveChangesAsync().Wait();
-
-			//foreach(var it in _sqlite.Users)
-			//{
-			//	_logger.LogInformation("\n");
-			//	_logger.LogInformation(it.Login);
-			//	_logger.LogInformation("\n");
-			//}
 
 			return RedirectToAction(nameof(Login));
 		}
