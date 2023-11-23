@@ -5,11 +5,11 @@ namespace MyDuoCards.Models.DBModels
 	public class RuWord
 	{
 		[Key]
-		public int RuWordId { get; set; }
+		public int Id { get; set; }
+        public string? RuWriting { get; set; }
 
-		public int EuWordId { get; set; }
-		public EuWord EuWord { get; set; } = null!;
+        public int EnWordId { get; set; }
+		public EnWord EnWord { get; set; }
 
-		public string? RuWriting { get; set; }
 	}
 }
