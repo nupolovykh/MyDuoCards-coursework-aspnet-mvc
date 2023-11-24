@@ -8,7 +8,8 @@
 @if (User is not null)
 {
 	<div>
-		<h3>@User.Identity!.Name</h3>
+		@{var currentUser = Model.FirstOrDefault(u => u.UserLogin == User.Identity!.Name || u.UserEmail == User.Identity!.Name);}
+		<h3>@currentUser.UserLogin</h3>
 		<a asp-action="Logout" asp-controller="Account">Logout</a>
 	</div>
 }
@@ -25,6 +26,9 @@
 			<th>
 				@Html.DisplayNameFor(model => model.UserPassword)
 			</th>
+			<th>
+				RoleName
+			</th>
 			<th></th>
 		</tr>
 	</thead>
@@ -35,6 +39,7 @@
 				<td>@item.UserLogin</td>
 				<td>@item.UserEmail</td>
 				<td>@item.UserPassword</td>
+				<td>@item.Role.RoleName</td>
 			</tr>
 		}
 	</tbody>
