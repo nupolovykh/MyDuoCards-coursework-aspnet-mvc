@@ -2,95 +2,103 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyDuoCards.Models;
 using MyDuoCards.Models.DBModels;
+using MyDuoCards.Models.Extensions;
 
-namespace MyDuoCards.Controllers
+namespace MyDuoCards.Controllers.DataBaseControllers
 {
-    public class RolesController : Controller
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")]
+    public class UsersController : Controller
     {
         private readonly ApplicationContext _context;
 
-        public RolesController(ApplicationContext context)
+        public UsersController(ApplicationContext context)
         {
             _context = context;
         }
 
-        // GET: Roles
+        // GET: Users
         public async Task<IActionResult> Index()
         {
-              return _context.Roles != null ? 
-                          View(await _context.Roles.ToListAsync()) :
-                          Problem("Entity set 'ApplicationContext.Roles'  is null.");
+            var applicationContext = _context.Users.Include(u => u.Role);
+            return View(await applicationContext.ToListAsync());
         }
 
-        // GET: Roles/Details/5
+        // GET: Users/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Roles == null)
+            if (id == null || _context.Users == null)
             {
                 return NotFound();
             }
 
-            var role = await _context.Roles
-                .FirstOrDefaultAsync(m => m.RoleId == id);
-            if (role == null)
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(m => m.UserId == id);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return View(role);
+            return View(user);
         }
 
-        // GET: Roles/Create
+        // GET: Users/Create
         public IActionResult Create()
         {
+            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId");
             return View();
         }
 
-        // POST: Roles/Create
+        // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RoleId,RoleName")] Role role)
+        public async Task<IActionResult> Create([Bind("UserId,UserLogin,UserEmail,UserPassword,RoleId")] User user)
         {
+            user.UserPassword = user.UserPassword.ToHash(); //fix
             if (ModelState.IsValid)
             {
-                _context.Add(role);
+                _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(role);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", user.RoleId);
+            return View(user);
         }
 
-        // GET: Roles/Edit/5
+        // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Roles == null)
+            if (id == null || _context.Users == null)
             {
                 return NotFound();
             }
 
-            var role = await _context.Roles.FindAsync(id);
-            if (role == null)
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
             {
                 return NotFound();
             }
-            return View(role);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", user.RoleId);
+            return View(user);
         }
 
-        // POST: Roles/Edit/5
+        // POST: Users/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RoleId,RoleName")] Role role)
+        public async Task<IActionResult> Edit(int id, [Bind("UserId,UserLogin,UserEmail,UserPassword,RoleId")] User user)
         {
-            if (id != role.RoleId)
+            if (id != user.UserId)
             {
                 return NotFound();
             }
@@ -99,12 +107,13 @@ namespace MyDuoCards.Controllers
             {
                 try
                 {
-                    _context.Update(role);
+                    user.UserPassword = user.UserPassword.ToHash(); //fix
+                    _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RoleExists(role.RoleId))
+                    if (!UserExists(user.UserId))
                     {
                         return NotFound();
                     }
@@ -115,49 +124,51 @@ namespace MyDuoCards.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(role);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", user.RoleId);
+            return View(user);
         }
 
-        // GET: Roles/Delete/5
+        // GET: Users/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Roles == null)
+            if (id == null || _context.Users == null)
             {
                 return NotFound();
             }
 
-            var role = await _context.Roles
-                .FirstOrDefaultAsync(m => m.RoleId == id);
-            if (role == null)
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(m => m.UserId == id);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return View(role);
+            return View(user);
         }
 
-        // POST: Roles/Delete/5
+        // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Roles == null)
+            if (_context.Users == null)
             {
-                return Problem("Entity set 'ApplicationContext.Roles'  is null.");
+                return Problem("Entity set 'ApplicationContext.Users'  is null.");
             }
-            var role = await _context.Roles.FindAsync(id);
-            if (role != null)
+            var user = await _context.Users.FindAsync(id);
+            if (user != null)
             {
-                _context.Roles.Remove(role);
+                _context.Users.Remove(user);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RoleExists(int id)
+        private bool UserExists(int id)
         {
-          return (_context.Roles?.Any(e => e.RoleId == id)).GetValueOrDefault();
+          return (_context.Users?.Any(e => e.UserId == id)).GetValueOrDefault();
         }
     }
 }

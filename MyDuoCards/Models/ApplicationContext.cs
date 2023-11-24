@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyDuoCards.Models.DBModels;
+using MyDuoCards.Models.Extensions;
+using System.Configuration;
 
 namespace MyDuoCards.Models
 
@@ -16,8 +18,18 @@ namespace MyDuoCards.Models
 		public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
             //Database.EnsureDeleted();
-            Database.EnsureCreated();
-        }
+            if (Database.EnsureCreated())
+            {
+				var roles = Set<Role>();
+				roles.Add(new Role { RoleName = "Admin" });
+				roles.Add(new Role { RoleName = "User" });
+
+				var venus = Set<User>();
+				venus.Add(new User { UserLogin = "Minako", UserEmail = "venus@su", UserPassword = "beam".ToHash(), RoleId = 1});
+
+				SaveChanges();
+			}
+		}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

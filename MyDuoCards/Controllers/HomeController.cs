@@ -21,7 +21,7 @@ namespace MyDuoCards.Controllers
 
 		public async Task<IActionResult> Index()
 		{
-			return View(await _sqlite.Users.ToListAsync());
+			return View(await _sqlite.Users.Include(u => u.Role).ToListAsync());
 		}
 
 		public IActionResult Privacy()

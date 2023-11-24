@@ -48,8 +48,10 @@ namespace MyDuoCards.Controllers
 			user.UserLogin = regUser.Login;
 			user.UserEmail = regUser.Email;
 			user.UserPassword = regUser.Password.ToHash();
+			user.RoleId = 2;
 
-			_sqlite.Users.Add(user);
+
+            _sqlite.Users.Add(user);
 			_sqlite.SaveChangesAsync().Wait();
 
 			return RedirectToAction(nameof(Login));
@@ -63,11 +65,15 @@ namespace MyDuoCards.Controllers
 
 		// POST: Account/Login
 		[HttpPost]
-		public async Task<IActionResult> Login(LoginModel loginUser, bool failed = false)
+		public async Task<IActionResult> Login(LoginModel loginUser, bool failed = false) //why he add this "failed"?
 		{
+			var userToLogin = await _sqlite.Users
+				.Where(u =>
+				u.UserLogin == loginUser.LoginOrEmail ||
+				u.UserEmail == loginUser.LoginOrEmail)
+				.Include(u => u.Role)
+				.SingleOrDefaultAsync();
 
-			var userToLogin = await _sqlite.Users.Where(u => u.UserLogin == loginUser.LoginOrEmail || u.UserEmail == loginUser.LoginOrEmail).SingleOrDefaultAsync();
-			//_logger.LogInformation(userToLogin.ToString());
 			if (userToLogin is null)
 			{
 				_logger.LogWarning("At {time} Failed login attempt was made with {login}", DateTime.Now.ToString("u"), loginUser.LoginOrEmail);
@@ -81,21 +87,21 @@ namespace MyDuoCards.Controllers
 				return View(loginUser);
 			}
 
-			Authenticate(loginUser.LoginOrEmail);
+			Authenticate(userToLogin);
 			return RedirectToAction(nameof(Index), "Home");
 		}
 
-		private void Authenticate(string userName)
+		private void Authenticate(User user)
 		{
+			//_logger.LogWarning(user.Role.RoleName);
 			var claims = new List<Claim>
 			{
-				new Claim(ClaimsIdentity.DefaultNameClaimType, userName)
-
+				new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserLogin),
+				new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.RoleName)
 			};
 
 			ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
 			HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id)).Wait();
-			//_logger.LogError(CookieAuthenticationDefaults.AuthenticationScheme);
 		}
 
 		[Authorize]
