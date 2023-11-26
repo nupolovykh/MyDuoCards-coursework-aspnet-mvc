@@ -8,8 +8,7 @@
 @if (User is not null)
 {
 	<div>
-		@{var currentUser = Model.FirstOrDefault(u => u.UserLogin == User.Identity!.Name || u.UserEmail == User.Identity!.Name);}
-		<h3>@currentUser.UserLogin</h3>
+		<h3>@User.Identity!.Name</h3>
 		<a asp-action="Logout" asp-controller="Account">Logout</a>
 	</div>
 }
@@ -18,13 +17,13 @@
 	<thead>
 		<tr>
 			<th>
-				@Html.DisplayNameFor(model => model.UserLogin)
+				@Html.DisplayNameFor(model => model.Login)
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.UserEmail)
+				@Html.DisplayNameFor(model => model.Email)
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.UserPassword)
+				@Html.DisplayNameFor(model => model.Password)
 			</th>
 			<th>
 				RoleName
@@ -36,10 +35,10 @@
 		@foreach (var item in Model)
 		{
 			<tr>
-				<td>@item.UserLogin</td>
-				<td>@item.UserEmail</td>
-				<td>@item.UserPassword</td>
-				<td>@item.Role.RoleName</td>
+				<td>@item.Login</td>
+				<td>@item.Email</td>
+				<td>@item.Password</td>
+				<td>@item.Role.Name</td>
 			</tr>
 		}
 	</tbody>

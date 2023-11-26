@@ -25,9 +25,9 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // GET: Roles
         public async Task<IActionResult> Index()
         {
-            return _context.Roles != null ?
-                        View(await _context.Roles.ToListAsync()) :
-                        Problem("Entity set 'ApplicationContext.Roles'  is null.");
+              return _context.Roles != null ? 
+                          View(await _context.Roles.ToListAsync()) :
+                          Problem("Entity set 'ApplicationContext.Roles'  is null.");
         }
 
         // GET: Roles/Details/5
@@ -39,7 +39,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             }
 
             var role = await _context.Roles
-                .FirstOrDefaultAsync(m => m.RoleId == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (role == null)
             {
                 return NotFound();
@@ -59,7 +59,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RoleId,RoleName")] Role role)
+        public async Task<IActionResult> Create([Bind("Id,Name")] Role role)
         {
             if (ModelState.IsValid)
             {
@@ -91,9 +91,9 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RoleId,RoleName")] Role role)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Role role)
         {
-            if (id != role.RoleId)
+            if (id != role.Id)
             {
                 return NotFound();
             }
@@ -107,7 +107,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RoleExists(role.RoleId))
+                    if (!RoleExists(role.Id))
                     {
                         return NotFound();
                     }
@@ -130,7 +130,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             }
 
             var role = await _context.Roles
-                .FirstOrDefaultAsync(m => m.RoleId == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (role == null)
             {
                 return NotFound();
@@ -153,14 +153,14 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             {
                 _context.Roles.Remove(role);
             }
-
+            
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool RoleExists(int id)
         {
-            return (_context.Roles?.Any(e => e.RoleId == id)).GetValueOrDefault();
+          return (_context.Roles?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

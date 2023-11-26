@@ -6,10 +6,10 @@ namespace MyDuoCards.Models.DBModels
 	{
 		[Key]
 		public int Id { get; set; }
-        public string? RuWriting { get; set; }
+        public string RuWriting { get; set; }
 
         public int EnWordId { get; set; }
-		public EnWord EnWord { get; set; }
+		public EnWord? EnWord { get; set; }
 
 	}
 }

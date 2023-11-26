@@ -1,16 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Metadata;
 
 namespace MyDuoCards.Models.DBModels
 {
-    //[PrimaryKeys(UserId,EnWordId)]
+    [PrimaryKey(nameof(UserId), nameof(EnWordId))]
     public class Dictionary
 	{
-		[Key]
-		public int UserId { get; set; }
-		public User User { get; set; }
+        //[Key, Column(Order = 0)]
+        public int UserId { get; set; }
+		public User? User { get; set; }
 
-		public int EnWordId { get; set; }
+        //[Key, Column(Order = 1)]
+        public int EnWordId { get; set; }
 		public EnWord? EuWord { get; set; }
 	}
 }
