@@ -52,8 +52,8 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // GET: Dictionaries/Create
         public IActionResult Create()
         {
-            ViewData["EnWordId"] = new SelectList(_context.EuWords, "Id", "Id");
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
+            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -70,8 +70,8 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EnWordId"] = new SelectList(_context.EuWords, "Id", "Id", dictionary.EnWordId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", dictionary.UserId);
+            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id", dictionary.EnWordId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", dictionary.UserId);
             return View(dictionary);
         }
 
@@ -88,8 +88,8 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             {
                 return NotFound();
             }
-            ViewData["EnWordId"] = new SelectList(_context.EuWords, "Id", "Id", dictionary.EnWordId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", dictionary.UserId);
+            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id", dictionary.EnWordId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", dictionary.UserId);
             return View(dictionary);
         }
 
@@ -125,8 +125,8 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EnWordId"] = new SelectList(_context.EuWords, "Id", "Id", dictionary.EnWordId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", dictionary.UserId);
+            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id", dictionary.EnWordId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", dictionary.UserId);
             return View(dictionary);
         }
 

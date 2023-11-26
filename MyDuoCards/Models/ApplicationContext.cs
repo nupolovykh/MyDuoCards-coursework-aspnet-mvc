@@ -11,7 +11,7 @@ namespace MyDuoCards.Models
         public DbSet<User> Users { get; set; } = null!;
 		public DbSet<Role> Roles { get; set; } = null!;
 		public DbSet<Dictionary> Dictionaries { get; set; } = null!;
-		public DbSet<EnWord> EuWords { get; set; } = null!;
+		public DbSet<EnWord> EnWords { get; set; } = null!;
 		public DbSet<RuWord> RuWords { get; set; } = null!;
 
 
@@ -21,13 +21,16 @@ namespace MyDuoCards.Models
             if (Database.EnsureCreated())
             {
 				var roles = Set<Role>();
-				roles.Add(new Role { RoleName = "Admin" });
-				roles.Add(new Role { RoleName = "User" });
+				roles.Add(new Role { Name = "Admin" });
+				roles.Add(new Role { Name = "User" });
 
-				var venus = Set<User>();
-				venus.Add(new User { UserLogin = "Minako", UserEmail = "venus@su", UserPassword = "beam".ToHash(), RoleId = 1});
+                var venus = Set<User>();
+				venus.Add(new User { Login = "Minako", Email = "venus@su", Password = "beam".ToHash(), RoleId = 1});
 
-				SaveChanges();
+                var enWords = Set<EnWord>();
+                enWords.Add(new EnWord { EnWriting = "something" });
+
+                SaveChanges();
 			}
 		}
 

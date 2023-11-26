@@ -25,20 +25,20 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // GET: EnWords
         public async Task<IActionResult> Index()
         {
-              return _context.EuWords != null ? 
-                          View(await _context.EuWords.ToListAsync()) :
-                          Problem("Entity set 'ApplicationContext.EuWords'  is null.");
+              return _context.EnWords != null ? 
+                          View(await _context.EnWords.ToListAsync()) :
+                          Problem("Entity set 'ApplicationContext.EnWords'  is null.");
         }
 
         // GET: EnWords/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.EuWords == null)
+            if (id == null || _context.EnWords == null)
             {
                 return NotFound();
             }
 
-            var enWord = await _context.EuWords
+            var enWord = await _context.EnWords
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (enWord == null)
             {
@@ -73,12 +73,12 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // GET: EnWords/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.EuWords == null)
+            if (id == null || _context.EnWords == null)
             {
                 return NotFound();
             }
 
-            var enWord = await _context.EuWords.FindAsync(id);
+            var enWord = await _context.EnWords.FindAsync(id);
             if (enWord == null)
             {
                 return NotFound();
@@ -124,12 +124,12 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // GET: EnWords/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.EuWords == null)
+            if (id == null || _context.EnWords == null)
             {
                 return NotFound();
             }
 
-            var enWord = await _context.EuWords
+            var enWord = await _context.EnWords
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (enWord == null)
             {
@@ -144,14 +144,14 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.EuWords == null)
+            if (_context.EnWords == null)
             {
-                return Problem("Entity set 'ApplicationContext.EuWords'  is null.");
+                return Problem("Entity set 'ApplicationContext.EnWords'  is null.");
             }
-            var enWord = await _context.EuWords.FindAsync(id);
+            var enWord = await _context.EnWords.FindAsync(id);
             if (enWord != null)
             {
-                _context.EuWords.Remove(enWord);
+                _context.EnWords.Remove(enWord);
             }
             
             await _context.SaveChangesAsync();
@@ -160,7 +160,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
 
         private bool EnWordExists(int id)
         {
-          return (_context.EuWords?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.EnWords?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

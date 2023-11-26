@@ -38,17 +38,17 @@ namespace MyDuoCards.Controllers
 				ModelState.AddModelError("isRegFailed", "Passwords incorrect");
 				return View(regUser);
 			}
-			if (_sqlite.Users.Where(u => u.UserLogin == regUser.Login || u.UserLogin == regUser.Login || u.UserEmail == regUser.Login || u.UserEmail == regUser.Email).Any())
+			if (_sqlite.Users.Where(u => u.Login == regUser.Login || u.Login == regUser.Login || u.Email == regUser.Login || u.Email == regUser.Email).Any())
 			{
 				ModelState.AddModelError("isRegFailed", "Login or Email already taken");
 				return View(regUser);
 			}
 
 			var user = new User();
-			user.UserLogin = regUser.Login;
-			user.UserEmail = regUser.Email;
-			user.UserPassword = regUser.Password.ToHash();
-			user.RoleId = 2;
+			user.Login = regUser.Login;
+			user.Email = regUser.Email;
+			user.Password = regUser.Password.ToHash();
+            user.RoleId = 2;
 
 
             _sqlite.Users.Add(user);
@@ -69,8 +69,8 @@ namespace MyDuoCards.Controllers
 		{
 			var userToLogin = await _sqlite.Users
 				.Where(u =>
-				u.UserLogin == loginUser.LoginOrEmail ||
-				u.UserEmail == loginUser.LoginOrEmail)
+				u.Login == loginUser.LoginOrEmail ||
+				u.Email == loginUser.LoginOrEmail)
 				.Include(u => u.Role)
 				.SingleOrDefaultAsync();
 
@@ -80,7 +80,7 @@ namespace MyDuoCards.Controllers
 				ModelState.AddModelError("isLoginFailed", "Bad login or email");
 				return View(loginUser);
 			}
-			if (userToLogin?.UserPassword != loginUser.Password.ToHash())
+			if (userToLogin?.Password != loginUser.Password.ToHash())
 			{
 				_logger.LogWarning("At {time} Failed login attempt was made with {login}", DateTime.Now.ToString("u"), loginUser.LoginOrEmail);
 				ModelState.AddModelError("isLoginFailed", "Bad password");
@@ -96,8 +96,8 @@ namespace MyDuoCards.Controllers
 			//_logger.LogWarning(user.Role.RoleName);
 			var claims = new List<Claim>
 			{
-				new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserLogin),
-				new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.RoleName)
+				new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
+				new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.Name)
 			};
 
 			ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
