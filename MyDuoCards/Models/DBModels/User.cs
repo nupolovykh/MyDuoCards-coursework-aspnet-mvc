@@ -12,6 +12,8 @@ namespace MyDuoCards.Models.DBModels
         public int RoleId { get; set; }
 		public Role? Role { get; set; }
 
-        public List<Dictionary>? Dictionaries { get; set; } 
+        public List<Dictionary>? Dictionaries { get; set; }
+
+		public ICollection<Attandance>? Attandances { get; set; }
 	}
 }

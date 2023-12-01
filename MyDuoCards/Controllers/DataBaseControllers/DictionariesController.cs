@@ -62,7 +62,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,EnWordId")] Dictionary dictionary)
+        public async Task<IActionResult> Create([Bind("Category,UserId,EnWordId")] Dictionary dictionary)
         {
             if (ModelState.IsValid)
             {
@@ -98,7 +98,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,EnWordId")] Dictionary dictionary)
+        public async Task<IActionResult> Edit(int id, [Bind("Category,UserId,EnWordId")] Dictionary dictionary)
         {
             if (id != dictionary.UserId)
             {

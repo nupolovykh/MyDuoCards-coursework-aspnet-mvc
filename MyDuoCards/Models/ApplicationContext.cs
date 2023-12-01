@@ -13,6 +13,7 @@ namespace MyDuoCards.Models
 		public DbSet<Dictionary> Dictionaries { get; set; } = null!;
 		public DbSet<EnWord> EnWords { get; set; } = null!;
 		public DbSet<RuWord> RuWords { get; set; } = null!;
+        public DbSet<Attandance> Attandances { get; set; } = null!;
 
 
 		public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
@@ -30,7 +31,15 @@ namespace MyDuoCards.Models
                 var enWords = Set<EnWord>();
                 enWords.Add(new EnWord { EnWriting = "something" });
 
-                SaveChanges();
+                var ruWords = Set<RuWord>();
+                ruWords.Add(new RuWord { EnWordId = 1, RuWriting = "Что-то"});
+
+				//SaveChanges();
+				//var attandances = Set<Attandance>();
+				//attandances.Add(new Attandance { UserId = 1,  Time = DateTime.Now});
+				//await SaveChangesAsync();
+
+				SaveChanges();
 			}
 		}
 

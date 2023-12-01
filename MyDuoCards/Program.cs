@@ -12,7 +12,8 @@ builder.Services.Configure<RazorViewEngineOptions>(options => options.AreaViewLo
 
 //SQLite
 builder.Services.AddDbContext<ApplicationContext>();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(); //options => options.LoginPath = "/Authorization/Login"
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -30,6 +31,6 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
 	name: "default",
-	pattern: "{controller=Account}/{action=Login}/{id?}");
+	pattern: "{controller=Authorization}/{action=Login}/{id?}");
 
 app.Run();

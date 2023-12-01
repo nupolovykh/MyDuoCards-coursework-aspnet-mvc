@@ -8,6 +8,7 @@ namespace MyDuoCards.Models.DBModels
     [PrimaryKey(nameof(UserId), nameof(EnWordId))]
     public class Dictionary
 	{
+        public string? Category { get; set; }
         //[Key, Column(Order = 0)]
         public int UserId { get; set; }
 		public User? User { get; set; }
