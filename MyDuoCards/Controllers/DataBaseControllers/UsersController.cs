@@ -83,6 +83,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             }
 
             var user = await _context.Users.FindAsync(id);
+
             if (user == null)
             {
                 return NotFound();
@@ -107,6 +108,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             {
                 try
                 {
+                    user.Password = user.Password.ToHash();
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }

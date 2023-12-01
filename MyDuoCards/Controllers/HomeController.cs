@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyDuoCards.Models;
+using MyDuoCards.Models.DBModels;
 using MyDuoCards.Models.ViewModels;
 using System.Diagnostics;
 
@@ -21,10 +22,23 @@ namespace MyDuoCards.Controllers
 
 		public async Task<IActionResult> Index()
 		{
+			var user = await _sqlite.Users.SingleOrDefaultAsync(u => u.Login == User.Identity.Name);
+
+			if (user != null)
+			{
+				_sqlite.Attandances.Add((new Attandance { UserId = user.Id, Time = DateTime.Now}));
+				await _sqlite.SaveChangesAsync();
+			}
+
 			return View(await _sqlite.Users.Include(u => u.Role).ToListAsync());
 		}
 
-		public IActionResult Privacy()
+        public IActionResult Options()
+        {
+            return View();
+        }
+
+        public IActionResult Privacy()
         {
             return View();
         }

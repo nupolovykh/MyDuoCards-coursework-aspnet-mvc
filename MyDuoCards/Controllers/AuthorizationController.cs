@@ -12,12 +12,12 @@ using Microsoft.Extensions.Logging;
 
 namespace MyDuoCards.Controllers
 {
-	public class AccountController : Controller
+	public class AuthorizationController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
 		private readonly ApplicationContext _sqlite;
 
-		public AccountController(ILogger<HomeController> logger, ApplicationContext Litecontext)
+		public AuthorizationController(ILogger<HomeController> logger, ApplicationContext Litecontext)
 		{
 			_logger = logger;
 			_sqlite = Litecontext;
@@ -88,7 +88,7 @@ namespace MyDuoCards.Controllers
 			}
 
 			Authenticate(userToLogin);
-			return RedirectToAction(nameof(Index), "Home");
+			return RedirectToAction("Index", "Home");
 		}
 
 		private void Authenticate(User user)
@@ -108,7 +108,7 @@ namespace MyDuoCards.Controllers
 		public IActionResult Logout()
 		{
 			HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
-			return RedirectToAction(nameof(Login), "Account");
+			return RedirectToAction(nameof(Login), "Authorization");
 		}
 	}
 }
