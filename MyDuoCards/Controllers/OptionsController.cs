@@ -25,11 +25,14 @@ namespace MyDuoCards.Controllers
 
 		public async Task<IActionResult> Index()
 		{
-			var user = _context.Users.Where(u => u.Login == User.Identity.Name)
+			var user = await _context.Users.Where(u => u.Login == User.Identity.Name)
                 .Include(u => u.Role)
                 .SingleOrDefaultAsync();
 
-            return View(await user);
+            // var result = user
+            // var viewResult = View(result)
+            // return viewResult
+            return View(user);
 		}
 
         [HttpPost]
