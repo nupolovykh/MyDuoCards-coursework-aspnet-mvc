@@ -29,7 +29,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
                                 <div class="dropdown-menu">
-                                        <a class ="dropdown-item" asp-action="Index" asp-controller="Options">Options</a>
+                                    <a class="dropdown-item" asp-area="" asp-action="Index" asp-controller="Options">Options</a>
                                     @if (User.IsInRole("Admin"))
                                     {
                                         <div class="dropdown-divider">Admin Extentions</div>
@@ -60,7 +60,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted bg-dark" data-bs-theme="dark">
         <div class="container">
             &copy; 2023 - MyDuoCards - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>

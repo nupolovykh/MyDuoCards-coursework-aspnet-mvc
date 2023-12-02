@@ -22,11 +22,15 @@ namespace MyDuoCards.Controllers
 
 		public async Task<IActionResult> Index()
 		{
-			var user = await _sqlite.Users.SingleOrDefaultAsync(u => u.Login == User.Identity.Name);
+			var user = await _sqlite.Users
+                .Include(usr => usr.Attandances)
+                .SingleOrDefaultAsync(u => u.Login == User.Identity.Name);
 
 			if (user != null)
 			{
-				_sqlite.Attandances.Add((new Attandance { UserId = user.Id, Time = DateTime.Now}));
+                user.Attandances.Add(new Attandance() {/* UserId = user.Id, */Time = DateTime.UtcNow });
+
+				//_sqlite.Attandances.Add((new Attandance { UserId = user.Id, Time = DateTime.Now}));
 				await _sqlite.SaveChangesAsync();
 			}
 

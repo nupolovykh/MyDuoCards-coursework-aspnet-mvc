@@ -43,6 +43,13 @@ namespace MyDuoCards.Models
 			}
 		}
 
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    base.OnModelCreating(modelBuilder);
+        //    modelBuilder.Entity<RuWord>()
+        //        .HasData(new RuWord { EnWordId = 1, RuWriting = "Что-то" });
+        //}
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string databasePath = CreatingPath();
