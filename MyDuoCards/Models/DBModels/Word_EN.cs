@@ -10,5 +10,8 @@ namespace MyDuoCards.Models.DBModels
 
         public List<Dictionary>? Dictionaries { get; set; }
 
+        //public int RuWordId { get; set; }
+        //public EnWord? RuWord { get; set; }
+
     }
 }

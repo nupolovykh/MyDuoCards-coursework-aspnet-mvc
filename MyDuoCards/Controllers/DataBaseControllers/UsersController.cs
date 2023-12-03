@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using MyDuoCards.Models;
 using MyDuoCards.Models.DBModels;
 using MyDuoCards.Models.Extensions;
+using MyDuoCards.Models.ViewModels;
 
 namespace MyDuoCards.Controllers.DataBaseControllers
 {
@@ -88,8 +89,18 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             {
                 return NotFound();
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id", user.RoleId);
-            return View(user);
+
+            EditUserModel userForView = new EditUserModel();
+            userForView.Login = user.Login;
+            userForView.Email = user.Email;
+            userForView.RoleName = "null";
+            userForView.Password = user.Password;
+            userForView.ConfirmPassword = "null";
+            userForView.RoleId = user.RoleId;
+
+            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id", userForView.RoleId);
+
+            return View(userForView);
         }
 
         // POST: Users/Edit/5
@@ -97,9 +108,11 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Login,Email,Password,RoleId")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Login,Email,RoleName,Password,ConfirmPassword,RoleId")] EditUserModel model)
         {
-            if (id != user.Id)
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
             {
                 return NotFound();
             }
@@ -108,7 +121,15 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             {
                 try
                 {
-                    user.Password = user.Password.ToHash();
+                    user.Login = model.Login;
+                    user.Email = model.Email;
+                    user.RoleId = model.RoleId;
+
+                    if (user.Password != model.Password)
+                    {
+                        user.Password = model.Password.ToHash(); ;
+                    }
+
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
@@ -125,8 +146,9 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id", user.RoleId);
-            return View(user);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id", model.RoleId);
+
+            return View(model);
         }
 
         // GET: Users/Delete/5

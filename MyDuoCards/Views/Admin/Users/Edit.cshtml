@@ -1,4 +1,4 @@
-﻿@model MyDuoCards.Models.DBModels.User
+﻿@model MyDuoCards.Models.ViewModels.EditUserModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -12,7 +12,7 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="RoleName" />
             <div class="form-group">
                 <label asp-for="Login" class="control-label"></label>
                 <input asp-for="Login" class="form-control" />
@@ -28,6 +28,7 @@
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
+            <input type="hidden" asp-for="ConfirmPassword" />
             <div class="form-group">
                 <label asp-for="RoleId" class="control-label"></label>
                 <select asp-for="RoleId" class="form-control" asp-items="ViewBag.RoleId"></select>

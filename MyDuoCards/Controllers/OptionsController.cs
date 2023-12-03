@@ -1,20 +1,15 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyDuoCards.Models;
 using MyDuoCards.Models.DBModels;
-using NuGet.Protocol.Plugins;
-using SQLitePCL;
-using System.Security.Claims;
-using System;
-using Microsoft.AspNetCore.Authentication;
 using MyDuoCards.Models.Extensions;
+using MyDuoCards.Models.ViewModels;
 
 namespace MyDuoCards.Controllers
 {
-	[Authorize]
+    [Authorize]
 	public class OptionsController : Controller
 	{
 		private readonly ApplicationContext _context;
@@ -29,37 +24,54 @@ namespace MyDuoCards.Controllers
                 .Include(u => u.Role)
                 .SingleOrDefaultAsync();
 
+            EditUserModel userForView = new EditUserModel();
+            userForView.Login = user.Login;
+            userForView.Email = user.Email;
+            userForView.RoleName = user.Role.Name;
+            userForView.Password = user.Password;
+            userForView.RoleId = user.RoleId;
+
             // var result = user
             // var viewResult = View(result)
             // return viewResult
-            return View(user);
+
+            return View(userForView);
 		}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("Id,Login,Email,Password,RoleId")] User user)
+        public async Task<IActionResult> Index([Bind("Login,Email,RoleName,Password,ConfirmPassword,RoleId")] EditUserModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    user.Password = user.Password.ToHash(); //need to fix such as usercontroller also
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
-
-                    var reathirization = await _context.Users
-                    .Where(u => u.Login == user.Login)
+                    var user = await _context.Users
+                    .Where(u => u.Login == User.Identity.Name)
                     .Include(u => u.Role)
                     .SingleOrDefaultAsync();
 
-                    var claims = new List<Claim>
+                    user.Login = model.Login;
+                    user.Email = model.Email;
+
+                    if (user.Password != model.Password)
                     {
-                        new Claim(ClaimTypes.Name, reathirization.Login),
-                        new Claim(ClaimTypes.Role, reathirization.Role.Name)
-                    };
-                    var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
-                    var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                    await HttpContext.SignInAsync(claimsPrincipal);
+                        if (model.Password == model.ConfirmPassword)
+                        {
+                            user.Password = model.Password.ToHash();
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("EdittingError", "Changing password failed");
+                            return View(model);
+                        }
+                    }
+
+                    _context.Update(user);
+
+                    await _context.SaveChangesAsync();
+
+                    await HttpContext.SignInAsync(user.ClaimCreator());
                 }
                 catch (DbUpdateConcurrencyException)
                 {

@@ -12,29 +12,28 @@ namespace MyDuoCards.Controllers
 	public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationContext _sqlite;
+        private readonly ApplicationContext _context;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationContext Litecontext)
+        public HomeController(ILogger<HomeController> logger, ApplicationContext context)
         {
             _logger = logger;
-            _sqlite = Litecontext;
+            _context = context;
         }
 
 		public async Task<IActionResult> Index()
 		{
-			var user = await _sqlite.Users
+			var user = await _context.Users
                 .Include(usr => usr.Attandances)
                 .SingleOrDefaultAsync(u => u.Login == User.Identity.Name);
 
 			if (user != null)
 			{
-                user.Attandances.Add(new Attandance() {/* UserId = user.Id, */Time = DateTime.UtcNow });
-
-				//_sqlite.Attandances.Add((new Attandance { UserId = user.Id, Time = DateTime.Now}));
-				await _sqlite.SaveChangesAsync();
+                user.Attandances.Add(new Attandance() { Time = DateTime.UtcNow });
+                //_context.Attandances.Add((new Attandance { UserId = user.Id, Time = DateTime.Now}));
+                await _context.SaveChangesAsync();
 			}
 
-			return View(await _sqlite.Users.Include(u => u.Role).ToListAsync());
+			return View(await _context.Users.Include(u => u.Role).ToListAsync());
 		}
 
         public IActionResult Options()
