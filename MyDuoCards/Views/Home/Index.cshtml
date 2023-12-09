@@ -1,4 +1,5 @@
-﻿@model IEnumerable<MyDuoCards.Models.DBModels.RuWord>
+﻿@using MyDuoCards.Helpers
+@model IEnumerable<MyDuoCards.Models.DBModels.RuWord>
 
 @{
 	ViewData["Title"] = "Index";
@@ -12,25 +13,16 @@
 		<a asp-action="Logout" asp-controller="Authorization">Logout</a>
 	</div>
 }
+<div class="d-flex flex-wrap">
+	@foreach (var item in Model)
+	{
+		@Html.CardView(
+			item.EnWord,
+			User.Identity.Name,
+			x => Url.Action("AddTheDictionary", "Home", new { id = x }),
+			x => Url.Action("RemoveDictionary", "Home", new { id = x })
+		)
+	}
+</div>
 
-<table class="table">
-	<thead>
-		<tr>
-			<th>
-				@Html.DisplayNameFor(model => model.RuWriting)
-			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.EnWord.EnWriting)
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var item in Model)
-		{
-			<tr>
-				<td>@item.RuWriting</td>
-				<td>@item.EnWord.EnWriting</td>
-			</tr>
-		}
-	</tbody>
-</table>
+
