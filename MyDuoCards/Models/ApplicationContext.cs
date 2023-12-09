@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Bogus;
+using Microsoft.EntityFrameworkCore;
 using MyDuoCards.Models.DBModels;
 using MyDuoCards.Models.Extensions;
 using System.Configuration;
@@ -22,9 +23,9 @@ namespace MyDuoCards.Models
 
 
 		public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
-        {
-            Database.EnsureCreated();
-            //Database.EnsureDeleted();
+		{
+			Database.EnsureDeleted();
+			Database.EnsureCreated();
 
             //if (Database.EnsureCreated())
             //{
@@ -64,17 +65,31 @@ namespace MyDuoCards.Models
             modelBuilder.Entity<User>()
                 .HasData(new User { Id = 1, Login = "Minako", Email = "venus@su", Password = "beam".ToHash(), RoleId = 1 });
 
-            modelBuilder.Entity<EnWord>()
-                .HasData(new EnWord { Id = 1, EnWriting = "something" });
-
-            modelBuilder.Entity<RuWord>()
-                .HasData(new RuWord { Id = 1, EnWordId = 1, RuWriting = "Что-то" });
-
             modelBuilder.Entity<Attandance>()
                 .HasData(new Attandance { Id = 1, UserId = 1, Time = DateTime.Now });
-        }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+			var fakerEn = new Faker("en");
+			var fakerRu = new Faker("ru");
+
+            List<EnWord> enWords = new List<EnWord>();
+            for (int i = 1; i < 1000; i++) 
+            {
+                enWords.Add(new EnWord { Id = i, EnWriting = fakerEn.Lorem.Word() });
+            }
+
+
+			List<RuWord> ruWords = new List<RuWord>();
+			for (int i = 1; i < 1000; i++)
+			{
+				ruWords.Add(new RuWord { Id = i, RuWriting = fakerRu.Lorem.Word(), EnWordId = i });
+			}
+
+			modelBuilder.Entity<EnWord>().HasData(enWords);
+			modelBuilder.Entity<RuWord>().HasData(ruWords);
+
+		}
+
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string databasePath = CreatingPath();
             optionsBuilder.UseSqlite($"Data Source={databasePath}");
