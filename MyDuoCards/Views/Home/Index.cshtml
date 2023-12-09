@@ -1,10 +1,10 @@
-﻿@model IEnumerable<MyDuoCards.Models.DBModels.User>
+﻿@model IEnumerable<MyDuoCards.Models.DBModels.RuWord>
 
 @{
 	ViewData["Title"] = "Index";
 }
 
-<h1>Registered users</h1>
+<h1>Favorite dictionary</h1>
 @if (User is not null)
 {
 	<div>
@@ -17,28 +17,19 @@
 	<thead>
 		<tr>
 			<th>
-				@Html.DisplayNameFor(model => model.Login)
+				@Html.DisplayNameFor(model => model.RuWriting)
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.Email)
+				@Html.DisplayNameFor(model => model.EnWord.EnWriting)
 			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.Password)
-			</th>
-			<th>
-				RoleName
-			</th>
-			<th></th>
 		</tr>
 	</thead>
 	<tbody>
 		@foreach (var item in Model)
 		{
 			<tr>
-				<td>@item.Login</td>
-				<td>@item.Email</td>
-				<td>@item.Password</td>
-				<td>@item.Role.Name</td>
+				<td>@item.RuWriting</td>
+				<td>@item.EnWord.EnWriting</td>
 			</tr>
 		}
 	</tbody>

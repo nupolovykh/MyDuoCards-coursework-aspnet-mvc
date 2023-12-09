@@ -30,9 +30,9 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         }
 
         // GET: Dictionaries/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? userId, int? enWordId)
         {
-            if (id == null || _context.Dictionaries == null)
+            if (userId == null || enWordId == null || _context.Dictionaries == null)
             {
                 return NotFound();
             }
@@ -40,7 +40,8 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             var dictionary = await _context.Dictionaries
                 .Include(d => d.EuWord)
                 .Include(d => d.User)
-                .FirstOrDefaultAsync(m => m.UserId == id);
+                .FirstOrDefaultAsync(m => m.UserId == userId && m.EnWordId == enWordId);
+
             if (dictionary == null)
             {
                 return NotFound();
@@ -49,11 +50,12 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             return View(dictionary);
         }
 
+
         // GET: Dictionaries/Create
         public IActionResult Create()
         {
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "EnWriting");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Login");
             return View();
         }
 
@@ -76,20 +78,23 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         }
 
         // GET: Dictionaries/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? userId, int? enWordId)
         {
-            if (id == null || _context.Dictionaries == null)
+            if (userId == null || enWordId == null)
             {
                 return NotFound();
             }
 
-            var dictionary = await _context.Dictionaries.FindAsync(id);
+            var dictionary = await _context.Dictionaries.FirstOrDefaultAsync(d => d.UserId == userId && d.EnWordId == enWordId);
+
             if (dictionary == null)
             {
                 return NotFound();
             }
+
             ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id", dictionary.EnWordId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", dictionary.UserId);
+
             return View(dictionary);
         }
 
@@ -98,9 +103,9 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Category,UserId,EnWordId")] Dictionary dictionary)
+        public async Task<IActionResult> Edit(int userId, int enWordId, [Bind("Category,UserId,EnWordId")] Dictionary dictionary)
         {
-            if (id != dictionary.UserId)
+            if (userId != dictionary.UserId || enWordId != dictionary.EnWordId)
             {
                 return NotFound();
             }
@@ -114,7 +119,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DictionaryExists(dictionary.UserId))
+                    if (!DictionaryExists(dictionary.UserId, dictionary.EnWordId))
                     {
                         return NotFound();
                     }
@@ -131,9 +136,9 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         }
 
         // GET: Dictionaries/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? userId, int? enWordId)
         {
-            if (id == null || _context.Dictionaries == null)
+            if (userId == null || enWordId == null || _context.Dictionaries == null)
             {
                 return NotFound();
             }
@@ -141,7 +146,8 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             var dictionary = await _context.Dictionaries
                 .Include(d => d.EuWord)
                 .Include(d => d.User)
-                .FirstOrDefaultAsync(m => m.UserId == id);
+                .FirstOrDefaultAsync(m => m.UserId == userId && m.EnWordId == enWordId);
+
             if (dictionary == null)
             {
                 return NotFound();
@@ -153,25 +159,26 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // POST: Dictionaries/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int userId, int enWordId)
         {
-            if (_context.Dictionaries == null)
-            {
-                return Problem("Entity set 'ApplicationContext.Dictionaries'  is null.");
-            }
-            var dictionary = await _context.Dictionaries.FindAsync(id);
+            var dictionary = await _context.Dictionaries
+                .FirstOrDefaultAsync(d => d.UserId == userId && d.EnWordId == enWordId);
+
             if (dictionary != null)
             {
                 _context.Dictionaries.Remove(dictionary);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            else
+            {
+                return NotFound();
+            }
         }
 
-        private bool DictionaryExists(int id)
+        private bool DictionaryExists(int userId, int enWordId)
         {
-          return (_context.Dictionaries?.Any(e => e.UserId == id)).GetValueOrDefault();
+            return _context.Dictionaries.Any(d => d.UserId == userId && d.EnWordId == enWordId);
         }
     }
 }
