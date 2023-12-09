@@ -33,7 +33,7 @@ namespace MyDuoCards.Controllers
                 await _context.SaveChangesAsync();
 			}
 
-			return View(await _context.Users.Include(u => u.Role).ToListAsync());
+			return View(await _context.RuWords.Include(w => w.EnWord).ToListAsync());
 		}
 
         public IActionResult Options()

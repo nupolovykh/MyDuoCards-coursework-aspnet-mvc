@@ -51,7 +51,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // GET: RuWords/Create
         public IActionResult Create()
         {
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id");
+            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "EnWriting");
             return View();
         }
 
@@ -85,7 +85,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             {
                 return NotFound();
             }
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id", ruWord.EnWordId);
+            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "EnWriting", ruWord.EnWordId);
             return View(ruWord);
         }
 
