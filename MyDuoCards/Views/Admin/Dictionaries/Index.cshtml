@@ -13,7 +13,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Category)
+                @Html.DisplayNameFor(model => model.DictionaryStatement.Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.User)
@@ -28,7 +28,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Category)
+                @Html.DisplayFor(modelItem => item.DictionaryStatement.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.User.Login)

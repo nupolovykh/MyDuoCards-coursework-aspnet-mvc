@@ -21,10 +21,12 @@ namespace MyDuoCards.Models
 
         public DbSet<Attandance> Attandances { get; set; } = null!;
 
+        public DbSet<DictionaryStatement> DictionaryStatements { get; set; } = null!;
 
-		public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
+
+        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
 		{
-			Database.EnsureDeleted();
+			//Database.EnsureDeleted();
 			Database.EnsureCreated();
 
             //if (Database.EnsureCreated())
@@ -84,10 +86,17 @@ namespace MyDuoCards.Models
 				ruWords.Add(new RuWord { Id = i, RuWriting = fakerRu.Lorem.Word(), EnWordId = i });
 			}
 
-			modelBuilder.Entity<EnWord>().HasData(enWords);
-			modelBuilder.Entity<RuWord>().HasData(ruWords);
+            List<DictionaryStatement> dictionaryStatements = new List<DictionaryStatement>();
+            for (int i = 1; i < 10; i++)
+            {
+                dictionaryStatements.Add(new DictionaryStatement {Id = i, Name = fakerEn.Lorem.Word()});
+            }
 
-		}
+            modelBuilder.Entity<EnWord>().HasData(enWords);
+			modelBuilder.Entity<RuWord>().HasData(ruWords);
+            modelBuilder.Entity<DictionaryStatement>().HasData(dictionaryStatements);
+
+        }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

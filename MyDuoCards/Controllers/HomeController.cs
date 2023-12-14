@@ -49,20 +49,20 @@ namespace MyDuoCards.Controllers
 
         public async Task<IActionResult> AddTheDictionary(int id)
         {
-
             var ruWord = await _context.RuWords.FindAsync(id);
 
             var user = await _context.Users
                 .SingleOrDefaultAsync(u => u.Login == User.Identity.Name);
 
-            _context.Dictionaries.Add(new Dictionary() { Category = "Some", UserId = user.Id, EnWordId = ruWord.EnWordId });
+            Random rand = new Random();
+            _context.Dictionaries.Add(new Dictionary() {UserId = user.Id, EnWordId = ruWord.EnWordId, 
+                DictionaryStatementId = rand.Next(_context.DictionaryStatements.Count()) + 1});
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 		public async Task<IActionResult> RemoveDictionary(int id)
 		{
-
             var ruWord = _context.RuWords
                 .Include(ruWord => ruWord.EnWord)
                 .Where(w => w.Id == id)
@@ -81,11 +81,6 @@ namespace MyDuoCards.Controllers
 
 			return RedirectToAction(nameof(Index));
 		}
-
-		public IActionResult Options()
-        {
-            return View();
-        }
 
         public IActionResult Privacy()
         {

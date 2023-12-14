@@ -2,7 +2,7 @@
 @model IEnumerable<MyDuoCards.Models.DBModels.RuWord>
 
 @{
-	ViewData["Title"] = "Index";
+	ViewData["Title"] = "Home";
 }
 
 <h1>Favorite dictionary</h1>
@@ -13,16 +13,5 @@
 		<a asp-action="Logout" asp-controller="Authorization">Logout</a>
 	</div>
 }
-<div class="d-flex flex-wrap">
-	@foreach (var item in Model)
-	{
-		@Html.CardView(
-			item.EnWord,
-			User.Identity.Name,
-			x => Url.Action("AddTheDictionary", "Home", new { id = x }),
-			x => Url.Action("RemoveDictionary", "Home", new { id = x })
-		)
-	}
-</div>
 
 

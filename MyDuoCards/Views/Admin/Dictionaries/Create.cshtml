@@ -13,17 +13,16 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Category" class="control-label"></label>
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger"></span>
+                <label asp-for="DictionaryStatementId" class="control-label"></label>
+                <select asp-for="DictionaryStatementId" class="form-control" asp-items="ViewBag.DictionaryStatements"></select>
             </div>
             <div class="form-group">
                 <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+                <select asp-for="UserId" class="form-control" asp-items="ViewBag.User"></select>
             </div>
             <div class="form-group">
                 <label asp-for="EnWordId" class="control-label"></label>
-                <select asp-for="EnWordId" class ="form-control" asp-items="ViewBag.EnWordId"></select>
+                <select asp-for="EnWordId" class="form-control" asp-items="ViewBag.EnWord"></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

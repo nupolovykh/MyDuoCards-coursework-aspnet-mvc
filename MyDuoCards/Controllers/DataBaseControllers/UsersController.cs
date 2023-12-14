@@ -53,7 +53,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // GET: Users/Create
         public IActionResult Create()
         {
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id");
+            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name");
             return View();
         }
 
@@ -71,7 +71,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id", user.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
             return View(user);
         }
 
@@ -98,7 +98,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             userForView.ConfirmPassword = "null";
             userForView.RoleId = user.RoleId;
 
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id", userForView.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", userForView.RoleId);
 
             return View(userForView);
         }
@@ -146,7 +146,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id", model.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", model.RoleId);
 
             return View(model);
         }
