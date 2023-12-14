@@ -68,7 +68,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id", ruWord.EnWordId);
+            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "EnWriting", ruWord.EnWordId);
             return View(ruWord);
         }
 
@@ -121,7 +121,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id", ruWord.EnWordId);
+            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "EnWriting", ruWord.EnWordId);
             return View(ruWord);
         }
 

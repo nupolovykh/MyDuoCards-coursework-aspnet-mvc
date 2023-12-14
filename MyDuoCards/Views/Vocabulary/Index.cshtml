@@ -1,0 +1,20 @@
+﻿@using MyDuoCards.Helpers
+@model IEnumerable<MyDuoCards.Models.DBModels.RuWord>
+
+@{
+	ViewData["Title"] = "Vocabulary";
+}
+
+<h1>Vocabulary Bank</h1>
+<div class="d-flex flex-wrap">
+	@foreach (var item in Model)
+	{
+		@Html.CardView(
+			item.EnWord,
+			User.Identity.Name,
+			x => Url.Action("AddTheDictionary", "Vocabulary", new { id = x }),
+			x => Url.Action("RemoveDictionary", "Vocabulary", new { id = x })
+		)
+	}
+</div>
+

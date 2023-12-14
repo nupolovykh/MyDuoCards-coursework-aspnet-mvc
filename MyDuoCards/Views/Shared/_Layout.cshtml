@@ -26,20 +26,32 @@
                                     <span class="visually-hidden">(current)</span>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" asp-area="" asp-controller="Vocabulary" asp-action="Index">
+                                    Vocabulary
+                                    <span class="visually-hidden">(current)</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" asp-area="" asp-controller="Options" asp-action="Index">
+                                    Options
+                                    <span class="visually-hidden">(current)</span>
+                                </a>
+                            </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" asp-area="" asp-action="Index" asp-controller="Options">Options</a>
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <div class="dropdown-divider">Admin Extentions</div>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <div class="dropdown-menu">
+                                        @* <a class="dropdown-item" asp-area="" asp-action="Index" asp-controller="Options">Options</a>
+                                        <div class="dropdown-divider">Admin Extentions</div> *@
                                         <a class="dropdown-item" asp-area="Admin" asp-controller="Roles" asp-action="Index">Roles</a>
                                         <a class="dropdown-item" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
                                         <a class="dropdown-item" asp-area="Admin" asp-controller="Dictionaries" asp-action="Index">Dictionaries</a>
                                         <a class="dropdown-item" asp-area="Admin" asp-controller="EnWords" asp-action="Index">English Words</a>
                                         <a class="dropdown-item" asp-area="Admin" asp-controller="RuWords" asp-action="Index">Russian Words</a>
-                                    }
-                                </div>
+                                    </div>
+                                }
                             </li>
                         </ul>
                         <form class="d-flex">

@@ -9,7 +9,7 @@ namespace MyDuoCards.Models.DBModels
         public string RuWriting { get; set; }
 
         public int EnWordId { get; set; }
-		public EnWord EnWord { get; set; }
+		public EnWord? EnWord { get; set; }
 
 	}
 }

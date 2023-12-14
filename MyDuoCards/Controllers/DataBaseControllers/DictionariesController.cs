@@ -25,7 +25,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // GET: Dictionaries
         public async Task<IActionResult> Index()
         {
-            var applicationContext = _context.Dictionaries.Include(d => d.EuWord).Include(d => d.User);
+            var applicationContext = _context.Dictionaries.Include(d => d.EuWord).Include(d => d.User).Include(d => d.DictionaryStatement);
             return View(await applicationContext.ToListAsync());
         }
 
@@ -40,6 +40,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             var dictionary = await _context.Dictionaries
                 .Include(d => d.EuWord)
                 .Include(d => d.User)
+                .Include(d => d.DictionaryStatement)
                 .FirstOrDefaultAsync(m => m.UserId == userId && m.EnWordId == enWordId);
 
             if (dictionary == null)
@@ -54,8 +55,9 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // GET: Dictionaries/Create
         public IActionResult Create()
         {
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "EnWriting");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Login");
+            ViewData["DictionaryStatements"] = new SelectList(_context.DictionaryStatements, "Id", "Name");
+            ViewData["EnWord"] = new SelectList(_context.EnWords, "Id", "EnWriting");
+            ViewData["User"] = new SelectList(_context.Users, "Id", "Login");
             return View();
         }
 
@@ -64,7 +66,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Category,UserId,EnWordId")] Dictionary dictionary)
+        public async Task<IActionResult> Create([Bind("UserId,EnWordId,DictionaryStatementId")] Dictionary dictionary)
         {
             if (ModelState.IsValid)
             {
@@ -72,8 +74,8 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id", dictionary.EnWordId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", dictionary.UserId);
+            ViewData["EnWord"] = new SelectList(_context.EnWords, "Id", "EnWriting", dictionary.EnWordId);
+            ViewData["User"] = new SelectList(_context.Users, "Id", "Login", dictionary.UserId);
             return View(dictionary);
         }
 
@@ -92,8 +94,9 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                 return NotFound();
             }
 
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id", dictionary.EnWordId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", dictionary.UserId);
+            ViewData["DictionaryStatements"] = new SelectList(_context.DictionaryStatements, "Id", "Name");
+            ViewData["EnWord"] = new SelectList(_context.EnWords, "Id", "EnWriting", dictionary.EnWordId);
+            ViewData["User"] = new SelectList(_context.Users, "Id", "Login", dictionary.UserId);
 
             return View(dictionary);
         }
@@ -103,7 +106,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int userId, int enWordId, [Bind("Category,UserId,EnWordId")] Dictionary dictionary)
+        public async Task<IActionResult> Edit(int userId, int enWordId, [Bind("UserId,EnWordId,DictionaryStatementId")] Dictionary dictionary)
         {
             if (userId != dictionary.UserId || enWordId != dictionary.EnWordId)
             {
@@ -130,8 +133,8 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "Id", dictionary.EnWordId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", dictionary.UserId);
+            ViewData["EnWord"] = new SelectList(_context.EnWords, "Id", "EnWriting", dictionary.EnWordId);
+            ViewData["User"] = new SelectList(_context.Users, "Id", "Login", dictionary.UserId);
             return View(dictionary);
         }
 
@@ -146,6 +149,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             var dictionary = await _context.Dictionaries
                 .Include(d => d.EuWord)
                 .Include(d => d.User)
+                .Include(d => d.DictionaryStatement)
                 .FirstOrDefaultAsync(m => m.UserId == userId && m.EnWordId == enWordId);
 
             if (dictionary == null)
