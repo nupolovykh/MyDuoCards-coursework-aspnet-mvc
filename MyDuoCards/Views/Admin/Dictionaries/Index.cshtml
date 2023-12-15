@@ -1,47 +1,61 @@
 ﻿@model IEnumerable<MyDuoCards.Models.DBModels.Dictionary>
 
 @{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Index";
 }
 
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+	<a class="btn btn-dark" asp-action="Create">Create New</a>
 </p>
+
 <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.DictionaryStatement.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EuWord)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+	<thead>
+		<tr>
+			<th>
+				<span class="text-light">
+					<strong>@Html.DisplayNameFor(model => model.DictionaryStatement.Name)</strong>
+				</span>
+			</th>
+			<th>
+				<span class="text-light">
+					<strong>@Html.DisplayNameFor(model => model.User)</strong>
+				</span>
+			</th>
+			<th>
+				<span class="text-light">
+					<strong>@Html.DisplayNameFor(model => model.EuWord)</strong>
+				</span>
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
 @foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.DictionaryStatement.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Login)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EuWord.EnWriting)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { UserId = item.UserId, EnWordId = item.EnWordId }) |
-                @Html.ActionLink("Details", "Details", new { UserId = item.UserId, EnWordId = item.EnWordId }) |
-                @Html.ActionLink("Delete", "Delete", new { UserId = item.UserId, EnWordId = item.EnWordId })
-            </td>
-        </tr>
+		<tr>
+			<td>
+				<span class="text-light">
+						<strong>@Html.DisplayFor(modelItem => item.DictionaryStatement.Name)</strong>
+				</span>
+			</td>
+			<td>
+				<span class="text-light">
+						<strong>@Html.DisplayFor(modelItem => item.User.Login)</strong>
+				</span>
+			</td>
+			<td>
+				<span class="text-light">
+						<strong>@Html.DisplayFor(modelItem => item.EuWord.EnWriting)</strong>
+				</span>
+			</td>
+			<td>
+				@Html.ActionLink("Edit", "Edit", new { UserId = item.UserId, EnWordId = item.EnWordId }, new { @class = "btn btn-warning text-dark" }) |
+				@Html.ActionLink("Details", "Details", new { UserId = item.UserId, EnWordId = item.EnWordId }, new { @class = "btn btn-info text-dark" }) |
+				@Html.ActionLink("Delete", "Delete", new { UserId = item.UserId, EnWordId = item.EnWordId }, new { @class = "btn btn-danger text-dark" })
+			</td>
+		</tr>
 }
-    </tbody>
+	</tbody>
 </table>
+

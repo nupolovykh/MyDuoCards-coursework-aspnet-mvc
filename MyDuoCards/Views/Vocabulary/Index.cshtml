@@ -6,6 +6,14 @@
 }
 
 <h1>Vocabulary Bank</h1>
+
+<form asp-controller="Vocabulary" asp-action="Index">
+	<p class="d-flex">
+		<input class="form-control me-sm-2" type="text" name="SearchString" />
+		<input class="btn btn-secondary my-2 my-sm-0" type="submit" value="Filter" />
+	</p>
+</form>
+
 <div class="d-flex flex-wrap">
 	@foreach (var item in Model)
 	{

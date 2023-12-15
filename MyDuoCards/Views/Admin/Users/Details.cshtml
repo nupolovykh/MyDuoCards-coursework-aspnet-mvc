@@ -11,32 +11,48 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Login)
+            <span class="text-light">
+                <strong>@Html.DisplayNameFor(model => model.Login)</strong>
+            </span>
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Login)
+            <span class="text-light">
+                <strong>@Html.DisplayFor(model => model.Login)</strong>
+            </span>
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
+            <span class="text-light">
+                <strong>@Html.DisplayNameFor(model => model.Email)</strong>
+            </span>
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
+            <span class="text-light">
+                <strong>@Html.DisplayFor(model => model.Email)</strong>
+            </span>
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Password)
+            <span class="text-light">
+                <strong>@Html.DisplayNameFor(model => model.Password)</strong>
+            </span>
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Password)
-        </dd>
+        <td class = "col-sm-10">
+            <span class="text-light">
+                <strong>@Html.DisplayFor(model => model.Password)</strong>
+            </span>
+        </td>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Role.Name)
+            <span class="text-light">
+                <strong>@Html.DisplayNameFor(model => model.Role.Name)</strong>
+            </span>
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Role.Name)
-        </dd>
+        <td class = "col-sm-10">
+            <span class="text-light">
+                <strong>@Html.DisplayFor(model => model.Role.Name)</strong>
+            </span>
+        </td>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="form-group d-flex" style="margin-top: 10px">
+    <a class="btn btn-light text-dark" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+    <a class="btn btn-light" style="margin-left: 10px" asp-action="Index">Back to List</a>
 </div>

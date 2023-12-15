@@ -1,4 +1,4 @@
-﻿@model MyDuoCards.Models.DBModels.RuWord
+﻿@model MyDuoCards.Models.DBModels.DictionaryStatement
 
 @{
     ViewData["Title"] = "Edit";
@@ -6,7 +6,7 @@
 
 <h1>Edit</h1>
 
-<h4>RuWord</h4>
+<h4>DictionaryStatement</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,16 +14,10 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="RuWriting" class="form-label mt-0 control-label"></label>
-                <input asp-for="RuWriting" class="form-control" />
-                <span asp-validation-for="RuWriting" class="text-danger"></span>
+                <label class="form-label mt-0 control-label" asp-for="Name"></label>
+                <input class="form-control" asp-for="Name"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="EnWordId" class="form-label mt-0 control-label"></label>
-                <select asp-for="EnWordId" class="form-control text-dark" asp-items="ViewBag.EnWordId"></select>
-                <span asp-validation-for="EnWordId" class="text-danger"></span>
-            </div>
-
             <div class="form-group d-flex" style="margin-top: 10px">
                 <input class="btn btn-warning text-dark" style="margin-right: 10px" type="submit" value="Save" />
                 <a class="btn btn-light" asp-action="Index">Back to List</a>

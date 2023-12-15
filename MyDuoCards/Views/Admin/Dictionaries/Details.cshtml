@@ -11,26 +11,39 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DictionaryStatement.Name)
+            <span class="text-light">
+                <strong>@Html.DisplayNameFor(model => model.DictionaryStatement.Name)</strong>
+            </span>
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DictionaryStatement.Name)
+            <span class="text-light">
+                <strong>@Html.DisplayFor(model => model.DictionaryStatement.Name)</strong>
+            </span>
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
+            <span class="text-light">
+                <strong>@Html.DisplayNameFor(model => model.User)</strong>
+            </span>
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Login)
+            <span class="text-light">
+                <strong>@Html.DisplayFor(model => model.User.Login)</strong>
+            </span>
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EuWord)
+            <span class="text-light">
+                <strong>@Html.DisplayNameFor(model => model.EuWord)</strong>
+            </span>
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EuWord.EnWriting)
+            <span class="text-light">
+                <strong>@Html.DisplayFor(model => model.EuWord.EnWriting)</strong>
+            </span>
         </dd>
     </dl>
 </div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { UserId = Model.UserId, EnWordId = Model.EnWordId }) |
-    <a asp-action="Index">Back to List</a>
+
+<div class="form-group d-flex" style="margin-top: 10px">
+    @Html.ActionLink("Edit", "Edit", new { UserId = Model.UserId, EnWordId = Model.EnWordId }, new { @class = "btn btn-light text-dark" })
+    <a class="btn btn-light" style="margin-left: 10px" asp-action="Index">Back to List</a>
 </div>

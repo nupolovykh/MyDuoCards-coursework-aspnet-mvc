@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MyDuoCards.Models.DBModels.EnWord>
+﻿@model IEnumerable<MyDuoCards.Models.DBModels.DictionaryStatement>
 
 @{
     ViewData["Title"] = "Index";
@@ -15,7 +15,7 @@
         <tr>
             <th>
                 <span class="text-light">
-                    <strong>@Html.DisplayNameFor(model => model.EnWriting)</strong>
+                    <strong>@Html.DisplayNameFor(model => model.Name)</strong>
                 </span>
             </th>
             <th></th>
@@ -26,7 +26,7 @@
         <tr>
             <td>
                 <span class="text-light">
-                    <strong>@Html.DisplayFor(modelItem => item.EnWriting)</strong>
+                    <strong>@Html.DisplayFor(modelItem => item.Name)</strong>
                 </span>
             </td>
             <td>
@@ -38,4 +38,3 @@
 }
     </tbody>
 </table>
-

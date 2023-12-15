@@ -11,30 +11,42 @@
     <h4>Dictionary</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DictionaryStatement.Name)
+        <dt class="col-sm-2">
+            <span class="text-light">
+                <strong>@Html.DisplayNameFor(model => model.DictionaryStatement.Name)</strong>
+            </span>
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DictionaryStatement.Name)
+        <dd class="col-sm-10">
+            <span class="text-light">
+                <strong>@Html.DisplayFor(model => model.DictionaryStatement.Name)</strong>
+            </span>
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
+        <dt class="col-sm-2">
+            <span class="text-light">
+                <strong>@Html.DisplayNameFor(model => model.User)</strong>
+            </span>
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Login)
+        <dd class="col-sm-10">
+            <span class="text-light">
+                <strong>@Html.DisplayFor(model => model.User.Login)</strong>
+            </span>
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EuWord)
+        <dt class="col-sm-2">
+            <span class="text-light">
+                <strong>@Html.DisplayNameFor(model => model.EuWord)</strong>
+            </span>
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EuWord.EnWriting)
+        <dd class="col-sm-10">
+            <span class="text-light">
+                <strong>@Html.DisplayFor(model => model.EuWord.EnWriting)</strong>
+            </span>
         </dd>
     </dl>
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="UserId" />
         <input type="hidden" asp-for="EnWordId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input type="submit" value="Delete" class="btn btn-danger text-dark" />
+        <a class="btn btn-light text-dark" asp-action="Index">Back to List</a>
     </form>
 </div>
