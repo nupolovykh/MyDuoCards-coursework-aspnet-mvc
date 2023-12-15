@@ -16,19 +16,17 @@
 }
 
 <form asp-action="Login" asp-controller="Authorization">
-	<div class="form-group">
-		<label asp-for="LoginOrEmail"></label>
-		<input type="text" asp-for="LoginOrEmail" />
+	<div class="form-group" style="width: 300px">
+		<label class="form-label mt-0" asp-for="LoginOrEmail"></label>
+		<input class="form-control" type="text" asp-for="LoginOrEmail" />
 	</div>
-	<div class="form-group">
-		<label asp-for="Password"></label>
-		<input type="password" asp-for="Password" />
+	<div class="form-group" style="width: 300px">
+		<label class="form-label mt-0" asp-for="Password"></label>
+		<input class="form-control" type="password" asp-for="Password" />
 	</div>
-	<div class="form-group">
-		<input type="submit" value="Login" />
+	<div class="form-group d-flex" style="margin-top: 10px">
+		<input class="btn btn-success" style="margin-right: 10px" type="submit" value="Login" />
+		<a class="btn btn-light" asp-action="Register">Register</a>
 	</div>
+	<small class="form-text text-muted">Don't have account? - Register</small>
 </form>
-
-<div>
-	<p>Don't have account? <a asp-action="Register">Register</a></p>
-</div>

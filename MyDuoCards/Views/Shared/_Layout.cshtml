@@ -38,26 +38,27 @@
                                     <span class="visually-hidden">(current)</span>
                                 </a>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-                                @if (User.IsInRole("Admin"))
-                                {
-                                    <div class="dropdown-menu">
-                                        @* <a class="dropdown-item" asp-area="" asp-action="Index" asp-controller="Options">Options</a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop4" style="">
+                                            @* <a class="dropdown-item" asp-area="" asp-action="Index" asp-controller="Options">Options</a>
                                         <div class="dropdown-divider">Admin Extentions</div> *@
-                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Roles" asp-action="Index">Roles</a>
-                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
-                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Dictionaries" asp-action="Index">Dictionaries</a>
-                                        <a class="dropdown-item" asp-area="Admin" asp-controller="EnWords" asp-action="Index">English Words</a>
-                                        <a class="dropdown-item" asp-area="Admin" asp-controller="RuWords" asp-action="Index">Russian Words</a>
-                                    </div>
-                                }
-                            </li>
+                                            <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Roles" asp-action="Index">Roles</a>
+                                            <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
+                                            <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Dictionaries" asp-action="Index">Dictionaries</a>
+                                            <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="DictionaryStatements" asp-action="Index">Dictionary Statements</a>
+                                            <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="EnWords" asp-action="Index">English Words</a>
+                                            <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="RuWords" asp-action="Index">Russian Words</a>
+                                        </div>
+                                </li>
+                            }
                         </ul>
-                        <form class="d-flex">
+                        @* <form class="d-flex">
                             <input class="form-control me-sm-2" type="search" placeholder="Search" spellcheck="false" data-ms-editor="true">
                             <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-                        </form>
+                        </form> *@
                     </div>
                 }
             </div>

@@ -11,23 +11,31 @@
     <h4>RuWord</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RuWriting)
+        <dt class="col-sm-2">
+            <span class="text-light">
+                <strong>@Html.DisplayNameFor(model => model.RuWriting)</strong>
+            </span>
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RuWriting)
+        <dd class="col-sm-10">
+            <span class="text-light">
+                <strong>@Html.DisplayFor(model => model.RuWriting)</strong>
+            </span>
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EnWord.EnWriting)
+        <dt class="col-sm-2">
+            <span class="text-light">
+                <strong>@Html.DisplayNameFor(model => model.EnWord)</strong>
+            </span>
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EnWord.EnWriting)
+        <dd class="col-sm-10">
+            <span class="text-light">
+                <strong>@Html.DisplayFor(model => model.EnWord.EnWriting)</strong>
+            </span>
         </dd>
     </dl>
     
     <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input text-dark" type="hidden" asp-for="Id" />
+        <input class="btn btn-danger text-dark" type="submit" value="Delete" />
+        <a class="btn btn-light text-dark" asp-action="Index">Back to List</a>
     </form>
 </div>

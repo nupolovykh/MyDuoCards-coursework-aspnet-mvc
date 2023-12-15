@@ -5,13 +5,33 @@
 	ViewData["Title"] = "Home";
 }
 
-<h1>Favorite dictionary</h1>
-@if (User is not null)
-{
-	<div>
-		<h3>@User.Identity!.Name</h3>
-		<a asp-action="Logout" asp-controller="Authorization">Logout</a>
-	</div>
-}
+<div class="d-flex">
+	<h1 style="margin-right: 20px">Favorite dictionary of:</h1>
+	@if (User is not null)
+	{
+		<h1 style="margin-right: 20px">@User.Identity!.Name</h1>
+		<a class="btn btn-danger my-2 my-sm-1" asp-action="Logout" asp-controller="Authorization">Logout</a>
+	}
+</div>
+
+<form asp-controller="Home" asp-action="Index">
+	<p class="d-flex">
+		<input class="form-control me-sm-2" type="text" name="SearchString" />
+		<input class="btn btn-secondary my-2 my-sm-0" type="submit" value="Filter" />
+	</p>
+</form>
+
+<h1>Favourite Bank</h1>
+<div class="d-flex flex-wrap">
+	@foreach (var item in Model)
+	{
+		@Html.CardView(
+			item.EnWord,
+			User.Identity.Name,
+			x => Url.Action("AddTheDictionary", "Vocabulary", new { id = x }),
+			x => Url.Action("RemoveDictionary", "Vocabulary", new { id = x })
+		)
+	}
+</div>
 
 
