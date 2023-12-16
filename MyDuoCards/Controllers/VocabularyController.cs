@@ -10,8 +10,7 @@ using MyDuoCards.Models.Extensions;
 using MyDuoCards.Models.ViewModels;
 using System.Diagnostics;
 using System.Security.Policy;
-
-
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MyDuoCards.Controllers
 {
@@ -28,49 +27,35 @@ namespace MyDuoCards.Controllers
         }
 
 
-		public async Task<IActionResult> Index(string? searchString, int id = 1)
+		public async Task<IActionResult> Index(string? searchString, int page = 1)
         {
+			ViewData["searchString"] = searchString;
+			ViewData["page"] = page;
+
+			var modelRu = _context.RuWords
+					.Include(ruWord => ruWord.EnWord)
+						.ThenInclude(enWord => enWord.Dictionaries!)
+							.ThenInclude(dict => dict.User);
+
 			if (!String.IsNullOrEmpty(searchString))
 			{
 				if (LanguageValidator.IsRussian(searchString))
 				{
-					var modelRu = await _context.RuWords
-						.Where(ruWord => ruWord.RuWriting.Contains(searchString))
-							.Include(ruWord => ruWord.EnWord)
-								.ThenInclude(enWord => enWord.Dictionaries!)
-									.ThenInclude(dict => dict.User)
-					.Skip((id - 1) * 21)
-					.Take(21)
-					.ToListAsync();
+					modelRu
+						.Where(ruWord => ruWord.RuWriting.Contains(searchString));
 
-					return View(modelRu);
 				}
 				else if (LanguageValidator.IsEnglish(searchString))
 				{
-					var modelEn = await _context.RuWords
-						.Include(ruWord => ruWord.EnWord)
-							.ThenInclude(enWord => enWord.Dictionaries!)
-								.ThenInclude(dict => dict.User)
-									.Where(ruWord => ruWord.EnWord!.EnWriting.Contains(searchString))
-					.Skip((id - 1) * 21)
-					.Take(21)
-					.ToListAsync();
+					modelRu
+						.Where(ruWord => ruWord.RuWriting.Contains(searchString));
 
-					return View(modelEn);
 				}
 
 			}
 
-
-			var user = await _context.Users
-				.Include(usr => usr.Attandances)
-				.SingleOrDefaultAsync(u => u.Login == User.Identity!.Name);
-
-			var model = await _context.RuWords
-				.Include(ruWord => ruWord.EnWord!)
-					.ThenInclude(enWord => enWord.Dictionaries!)
-						.ThenInclude(dict => dict.User)
-				.Skip((id - 1) * 21)
+			var model = await modelRu
+				.Skip((page - 1) * 21)
 				.Take(21)
 				.ToListAsync();
 

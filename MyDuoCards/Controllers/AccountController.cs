@@ -12,12 +12,12 @@ using Microsoft.Extensions.Logging;
 
 namespace MyDuoCards.Controllers
 {
-	public class AuthorizationController : Controller
+	public class AccountController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
 		private readonly ApplicationContext _context;
 
-		public AuthorizationController(ILogger<HomeController> logger, ApplicationContext context)
+		public AccountController(ILogger<HomeController> logger, ApplicationContext context)
 		{
 			_logger = logger;
 			_context = context;
@@ -58,14 +58,15 @@ namespace MyDuoCards.Controllers
 		}
 
 		// GET: Account/Login
-		public IActionResult Login()
+		public IActionResult Login(string? ReturnUrl)
 		{
+			ViewData["ReturnUrl"] = ReturnUrl;
 			return View();
 		}
 
 		// POST: Account/Login
 		[HttpPost]
-		public async Task<IActionResult> Login(LoginModel loginUser, bool failed = false) //why he add this "failed"?
+		public async Task<IActionResult> Login(LoginModel loginUser, string? ReturnUrl, bool failed = false) //why he add this "failed"?
 		{
 			var userToLogin = await _context.Users
 				.Where(u =>
@@ -89,14 +90,19 @@ namespace MyDuoCards.Controllers
 
             await HttpContext.SignInAsync(userToLogin.ClaimCreator());
 
-            return RedirectToAction("Index", "Home");
+			//user.Attandances!.Add(new Attandance() { Time = DateTime.UtcNow });
+			////_context.Attandances.Add((new Attandance { UserId = user.Id, Time = DateTime.Now}));
+			//await _context.SaveChangesAsync();
+
+			//return Redirect(ReturnUrl);
+			return RedirectToAction("Index", "Home");
 		}
 
 		[Authorize]
 		public IActionResult Logout()
 		{
 			HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
-			return RedirectToAction(nameof(Login), "Authorization");
+			return RedirectToAction(nameof(Login), "Account");
 		}
 	}
 }

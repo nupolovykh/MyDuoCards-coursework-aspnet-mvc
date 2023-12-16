@@ -14,7 +14,7 @@
 			return true;
 		}
 
-		public static bool IsEnglish(string input)
+		public static bool IsEnglish(this string input)
 		{
 			foreach (char c in input)
 			{
