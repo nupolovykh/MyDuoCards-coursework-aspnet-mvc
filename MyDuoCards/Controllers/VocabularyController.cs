@@ -29,37 +29,53 @@ namespace MyDuoCards.Controllers
 
 		public async Task<IActionResult> Index(string? searchString, int page = 1)
         {
-			ViewData["searchString"] = searchString;
+            int quantityOfElements = 20;
+            ViewData["searchString"] = searchString;
 			ViewData["page"] = page;
 
 			var modelRu = _context.RuWords
 					.Include(ruWord => ruWord.EnWord)
-						.ThenInclude(enWord => enWord.Dictionaries!)
+						.ThenInclude(enWord => enWord!.Dictionaries!)
 							.ThenInclude(dict => dict.User);
+
+
+			var modelRuPlus = new List<RuWord>();
 
 			if (!String.IsNullOrEmpty(searchString))
 			{
 				if (LanguageValidator.IsRussian(searchString))
 				{
-					modelRu
-						.Where(ruWord => ruWord.RuWriting.Contains(searchString));
+					modelRuPlus = await modelRu
+						.Where(ruWord => ruWord.RuWriting.Contains(searchString))
+					.ToListAsync();
 
 				}
-				else if (LanguageValidator.IsEnglish(searchString))
+				else if (searchString.IsEnglish())
 				{
-					modelRu
-						.Where(ruWord => ruWord.RuWriting.Contains(searchString));
-
+					modelRuPlus = await modelRu
+						.Where(ruWord => ruWord.EnWord!.EnWriting.Contains(searchString))
+					.ToListAsync();
 				}
 
 			}
+			else modelRuPlus = await modelRu.ToListAsync();
 
-			var model = await modelRu
-				.Skip((page - 1) * 21)
-				.Take(21)
-				.ToListAsync();
+			var viewModel = modelRuPlus
+				.Skip((page - 1) * quantityOfElements)
+				.Take(quantityOfElements);
 
-			return View(model);
+			var count = modelRuPlus.Count();
+
+			List<int> list = null;
+			if (count != 0)
+			{
+				int maxIndex = (count / quantityOfElements) + 1;
+				list = ListBuilderForButtons.GetButtonIndexes(page, maxIndex);
+			}
+			ViewData["list"] = list;
+
+
+			return View(viewModel);
         }
 
 		public async Task<IActionResult> AddTheDictionary(int id)
@@ -67,7 +83,7 @@ namespace MyDuoCards.Controllers
 			var ruWord = await _context.RuWords.FindAsync(id);
 
 			var user = await _context.Users
-				.SingleOrDefaultAsync(u => u.Login == User.Identity.Name);
+				.SingleOrDefaultAsync(u => u.Login == User.Identity!.Name);
 
 			Random rand = new Random();
 			_context.Dictionaries.Add(new Dictionary()
@@ -95,7 +111,7 @@ namespace MyDuoCards.Controllers
 					.ThenInclude(d => d.EuWord)
 				.SingleOrDefaultAsync(u => u.Login == User.Identity!.Name);
 
-			var dictToRemove = user.Dictionaries!.Where(dict => dict.EuWord!.Id == ruWord!.EnWord!.Id).SingleOrDefault();
+			var dictToRemove = user!.Dictionaries!.Where(dict => dict.EuWord!.Id == ruWord!.EnWord!.Id).SingleOrDefault();
 
 			_context.Dictionaries.Remove(dictToRemove);
 

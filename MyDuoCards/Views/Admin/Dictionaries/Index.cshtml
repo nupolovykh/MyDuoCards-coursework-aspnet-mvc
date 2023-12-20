@@ -1,16 +1,16 @@
 ﻿@model IEnumerable<MyDuoCards.Models.DBModels.Dictionary>
 
 @{
-	ViewData["Title"] = "Index";
+	ViewData["Title"] = "Dictionaries";
 }
 
-<h1>Index</h1>
+<h1>Dictionaries</h1>
 
 <p>
-	<a class="btn btn-dark" asp-action="Create">Create New</a>
+	<a class="btn btn-success" asp-action="Create">Create New</a>
 </p>
 
-<table class="table">
+<table class="table table-striped">
 	<thead>
 		<tr>
 			<th>
@@ -28,7 +28,11 @@
 					<strong>@Html.DisplayNameFor(model => model.EuWord)</strong>
 				</span>
 			</th>
-			<th></th>
+			<th>
+				<span class="text-light">
+					<strong>Actions</strong>
+				</span>
+			</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -50,9 +54,9 @@
 				</span>
 			</td>
 			<td>
-				@Html.ActionLink("Edit", "Edit", new { UserId = item.UserId, EnWordId = item.EnWordId }, new { @class = "btn btn-warning text-dark" }) |
-				@Html.ActionLink("Details", "Details", new { UserId = item.UserId, EnWordId = item.EnWordId }, new { @class = "btn btn-info text-dark" }) |
-				@Html.ActionLink("Delete", "Delete", new { UserId = item.UserId, EnWordId = item.EnWordId }, new { @class = "btn btn-danger text-dark" })
+				@Html.ActionLink("Edit", "Edit", new { UserId = item.UserId, EnWordId = item.EnWordId }, new { @class = "btn btn-warning" })
+				@Html.ActionLink("Details", "Details", new { UserId = item.UserId, EnWordId = item.EnWordId }, new { @class = "btn btn-info" })
+				@Html.ActionLink("Delete", "Delete", new { UserId = item.UserId, EnWordId = item.EnWordId }, new { @class = "btn btn-danger" })
 			</td>
 		</tr>
 }

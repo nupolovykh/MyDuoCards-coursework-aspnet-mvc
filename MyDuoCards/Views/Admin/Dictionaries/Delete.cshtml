@@ -17,7 +17,7 @@
             </span>
         </dt>
         <dd class="col-sm-10">
-            <span class="text-light">
+            <span class="text-dark">
                 <strong>@Html.DisplayFor(model => model.DictionaryStatement.Name)</strong>
             </span>
         </dd>
@@ -27,7 +27,7 @@
             </span>
         </dt>
         <dd class="col-sm-10">
-            <span class="text-light">
+            <span class="text-dark">
                 <strong>@Html.DisplayFor(model => model.User.Login)</strong>
             </span>
         </dd>
@@ -37,16 +37,16 @@
             </span>
         </dt>
         <dd class="col-sm-10">
-            <span class="text-light">
+            <span class="text-dark">
                 <strong>@Html.DisplayFor(model => model.EuWord.EnWriting)</strong>
             </span>
         </dd>
     </dl>
     
-    <form asp-action="Delete">
+    <form asp-action="Delete" style="margin-top: 10px">
         <input type="hidden" asp-for="UserId" />
         <input type="hidden" asp-for="EnWordId" />
-        <input type="submit" value="Delete" class="btn btn-danger text-dark" />
-        <a class="btn btn-light text-dark" asp-action="Index">Back to List</a>
+        <input type="submit" style="margin-right: 10px" value="Delete" class="btn btn-danger" />
+        <a class="btn btn-light" asp-action="Index">Back to List</a>
     </form>
 </div>

@@ -1,7 +1,21 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Privacy Policy";
 }
 <h1>@ViewData["Title"]</h1>
 
 <p>Use this page to detail your site's privacy policy.</p>
-<p>Use this page to detail your site's privacy policy.</p>
+
+
+@{
+    //check the opportunity
+    var str = ViewContext.HttpContext.Request.Path;
+    var Uri = Context.Request.Host + Context.Request.Path;
+    var absoluteUri = Context.Request.Scheme + "://" + Context.Request.Host + Context.Request.Path;
+}
+
+<p>@str</p>
+<p>@Uri</p>
+<p>@absoluteUri</p>
+
+<p>@Path</p>

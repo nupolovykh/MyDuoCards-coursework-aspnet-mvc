@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyDuoCards.Models;
 using MyDuoCards.Models.DBModels;
+using MyDuoCards.Models.Extensions;
+using NuGet.Packaging.Signing;
 
 namespace MyDuoCards.Controllers.DataBaseControllers
 {
@@ -23,10 +25,39 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         }
 
         // GET: RuWords
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString, int page = 1)
         {
-            var applicationContext = _context.RuWords.Include(r => r.EnWord);
-            return View(await applicationContext.ToListAsync());
+            int quantityOfElements = 10;
+            ViewData["page"] = page;
+            ViewData["searchString"] = searchString;
+
+            var words = _context.RuWords.Include(r => r.EnWord);
+
+            var modelRuPlus = new List<RuWord>();
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                modelRuPlus = await words.Where(w => w.RuWriting.Contains(searchString)).ToListAsync();
+            }
+            else
+            {
+                modelRuPlus = await words.ToListAsync();
+            }
+
+            var applicationContext = modelRuPlus
+                .Skip((page - 1) * quantityOfElements)
+                .Take(quantityOfElements);
+
+            var count = modelRuPlus.Count();
+
+            List<int> list = null;
+            if (count != 0)
+            {
+                int maxIndex = (count / quantityOfElements) + 1;
+                list = ListBuilderForButtons.GetButtonIndexes(page, maxIndex);
+            }
+            ViewData["list"] = list;
+
+            return View(applicationContext);
         }
 
         // GET: RuWords/Details/5

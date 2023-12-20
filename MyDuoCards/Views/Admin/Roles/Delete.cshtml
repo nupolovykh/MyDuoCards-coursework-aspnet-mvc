@@ -7,25 +7,24 @@
 <h1>Delete</h1>
 
 <h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Role</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            <span class="text-light">
-                <strong>@Html.DisplayNameFor(model => model.Name)</strong>
-            </span>
-        </dt>
-        <dd class="col-sm-10">
-            <span class="text-light">
-                <strong>@Html.DisplayFor(model => model.Name)</strong>
-            </span>
-        </dd>
-    </dl>
+
+<h4>Role</h4>
+<hr />
+<dl class="row">
+    <dt class="col-sm-2">
+        <span class="text-light">
+            <strong>@Html.DisplayNameFor(model => model.Name)</strong>
+        </span>
+    </dt>
+    <dd class="col-sm-10">
+        <span class="text-dark">
+            <strong>@Html.DisplayFor(model => model.Name)</strong>
+        </span>
+    </dd>
+</dl>
     
-    <form asp-action="Delete">
-        <input text-dark" type="hidden" asp-for="Id" />
-        <input class="btn btn-danger text-dark" type="submit" value="Delete" />
-        <a class="btn btn-light text-dark" asp-action="Index">Back to List</a>
-    </form>
-</div>
+<form asp-action="Delete" >
+    <input text-dark" type="hidden" asp-for="Id" />
+    <input class="btn btn-danger text-dark" style="margin-right: 10px" type="submit" value="Delete" />
+    <a class="btn btn-light text-dark" asp-action="Index">Back to List</a>
+</form>
