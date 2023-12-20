@@ -8,6 +8,7 @@ using MyDuoCards.Models;
 using MyDuoCards.Models.DBModels;
 using MyDuoCards.Models.Extensions;
 using MyDuoCards.Models.ViewModels;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -25,59 +26,75 @@ namespace MyDuoCards.Controllers
 			_context = context;
 		}
 
-		public async Task<IActionResult> Index(string? searchString, int page = 1)
+		public async Task<IActionResult> Index(string? searchString = "", int page = 1)
 		{
-
-			ViewData["searchString"] = searchString;
+            int quantityOfElements = 13;
+            ViewData["searchString"] = searchString;
 			ViewData["page"] = page;
 
 			var user = await _context.Users
 				.Include(usr => usr.Attandances)
 				.SingleOrDefaultAsync(u => u.Login == User.Identity.Name);
 
-			////var previousPageUrl = Request.Headers["Referer"].ToString();
+			{
+                ////var previousPageUrl = Request.Headers["Referer"].ToString();
 
-			////foreach (var header in Request.Headers)
-			////{
-			////	_logger.LogWarning($"{header.Key}  ---   {header.Value}");
-			////}
+                ////foreach (var header in Request.Headers)
+                ////{
+                ////	_logger.LogWarning($"{header.Key}  ---   {header.Value}");
+                ////}
 
-			//if (user != null)		// this logic should be did over !!!!!!!!!!!!!!!!
-			//{
-			//	user.Attandances!.Add(new Attandance() { Time = DateTime.UtcNow });
-			//	//_context.Attandances.Add((new Attandance { UserId = user.Id, Time = DateTime.Now}));
-			//	await _context.SaveChangesAsync();
-			//}
+                //if (user != null)		// this logic should be did over !!!!!!!!!!!!!!!!
+                //{
+                //	user.Attandances!.Add(new Attandance() { Time = DateTime.UtcNow });
+                //	//_context.Attandances.Add((new Attandance { UserId = user.Id, Time = DateTime.Now}));
+                //	await _context.SaveChangesAsync();
+                //}
+            }	//not so important work
 
 
-			var modelRu = _context.RuWords
+            var modelRu = _context.RuWords
 					.Include(ruWord => ruWord.EnWord)
-						.ThenInclude(enWord => enWord.Dictionaries!)
+						.ThenInclude(enWord => enWord!.Dictionaries!)
 							.ThenInclude(dict => dict.User);
 
+
+			var modelRuPlus = new List<RuWord>();
 
             if (!String.IsNullOrEmpty(searchString))
 			{
 				if (LanguageValidator.IsRussian(searchString))
 				{
-					modelRu
-						.Where(ruWord => ruWord.RuWriting.Contains(searchString));
+                    modelRuPlus = await modelRu
+                        .Where(ruWord => ruWord.RuWriting.Contains(searchString))
+					.ToListAsync();
 
                 }
 				else if(searchString.IsEnglish())
 				{
-					modelRu
-						.Where(ruWord => ruWord.EnWord!.EnWriting.Contains(searchString));
-				}
+                    modelRuPlus = await modelRu
+                        .Where(ruWord => ruWord.EnWord!.EnWriting.Contains(searchString))
+                    .ToListAsync();
+                }
 
 			}
+			else modelRuPlus = await modelRu.ToListAsync();
 
-            var model = await modelRu.Where(ruWord => ruWord.EnWord!.Dictionaries!.Any(dict => dict.User!.Login == User.Identity!.Name))
-				.Skip((page - 1) * 14)
-				.Take(14)
-				.ToListAsync();
+			var viewModel = modelRuPlus.Where(ruWord => ruWord.EnWord!.Dictionaries!.Any(dict => dict.User!.Login == User.Identity!.Name))
+				.Skip((page - 1) * quantityOfElements)
+				.Take(quantityOfElements);
 
-			return View(model);
+			var count = modelRuPlus.Where(ruWord => ruWord.EnWord!.Dictionaries!.Any(dict => dict.User!.Login == User.Identity!.Name)).Count();
+
+			List<int> list = null;
+			if(count != 0)
+			{
+				int maxIndex = (count / quantityOfElements) + 1;
+				list = ListBuilderForButtons.GetButtonIndexes(page, maxIndex);
+			}
+			ViewData["list"] = list;
+
+			return View(viewModel);
 		}
 
 		public IActionResult Privacy()

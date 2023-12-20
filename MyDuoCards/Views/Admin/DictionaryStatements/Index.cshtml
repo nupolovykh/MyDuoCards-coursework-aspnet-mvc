@@ -1,16 +1,16 @@
 ﻿@model IEnumerable<MyDuoCards.Models.DBModels.DictionaryStatement>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "DictionaryStatements";
 }
 
-<h1>Index</h1>
+<h1>Dictionary Statements</h1>
 
 <p>
-    <a class="btn btn-dark" asp-action="Create">Create New</a>
+    <a class="btn btn-success" asp-action="Create">Create New</a>
 </p>
 
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>
@@ -18,7 +18,11 @@
                     <strong>@Html.DisplayNameFor(model => model.Name)</strong>
                 </span>
             </th>
-            <th></th>
+            <th>
+                <span class="text-light">
+                    <strong>Actions</strong>
+                </span>
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -29,10 +33,10 @@
                     <strong>@Html.DisplayFor(modelItem => item.Name)</strong>
                 </span>
             </td>
-            <td>
-                <a class="btn btn-warning text-dark" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a class="btn btn-info text-dark" asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a class="btn btn-danger text-dark" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <td width="75%">
+                <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }

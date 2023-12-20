@@ -46,7 +46,7 @@ namespace MyDuoCards.Helpers
 			divCardBody.InnerHtml.AppendHtml(btn);
 
 			divCard.AddCssClass("card");
-			divCard.MergeAttribute("style", "margin: 5px");
+			divCard.MergeAttribute("style", "margin: 3px");
 			divCard.InnerHtml.AppendHtml(divCardBody);
 
 			StringWriter sw = new StringWriter();
