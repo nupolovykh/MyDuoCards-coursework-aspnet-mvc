@@ -14,13 +14,14 @@ using System.Linq;
 
 namespace MyDuoCards.Controllers
 {
-	[Authorize]
+    [Authorize]
 	public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
 		private readonly ApplicationContext _context;
+        private int quantityOfElements = Constants.AmountOfCardsHome;
 
-		public HomeController(ILogger<HomeController> logger, ApplicationContext context)
+        public HomeController(ILogger<HomeController> logger, ApplicationContext context)
 		{
 			_logger = logger;
 			_context = context;
@@ -28,13 +29,12 @@ namespace MyDuoCards.Controllers
 
 		public async Task<IActionResult> Index(string? searchString = "", int page = 1)
 		{
-            int quantityOfElements = 13;
             ViewData["searchString"] = searchString;
 			ViewData["page"] = page;
 
 			var user = await _context.Users
 				.Include(usr => usr.Attandances)
-				.SingleOrDefaultAsync(u => u.Login == User.Identity.Name);
+				.SingleOrDefaultAsync(u => u.Login == User.Identity!.Name);
 
 			{
                 ////var previousPageUrl = Request.Headers["Referer"].ToString();
@@ -51,7 +51,6 @@ namespace MyDuoCards.Controllers
                 //	await _context.SaveChangesAsync();
                 //}
             }	//not so important work
-
 
             var modelRu = _context.RuWords
 					.Include(ruWord => ruWord.EnWord)
@@ -89,8 +88,9 @@ namespace MyDuoCards.Controllers
 			List<int> list = null;
 			if(count != 0)
 			{
-				int maxIndex = (count / quantityOfElements) + 1;
-				list = ListBuilderForButtons.GetButtonIndexes(page, maxIndex);
+                int maxIndex = (count / quantityOfElements);
+                if (count % quantityOfElements != 0) maxIndex++;
+                list = ListBuilderForButtons.GetButtonIndexes(page, maxIndex);
 			}
 			ViewData["list"] = list;
 

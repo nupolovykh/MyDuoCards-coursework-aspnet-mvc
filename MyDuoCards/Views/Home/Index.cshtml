@@ -9,7 +9,7 @@
 	<h1 style="margin-right: 20px">Favorite dictionary of:</h1>
 	@if (User is not null)
 	{
-		<h1 style="margin-right: 20px" class="text-primary">@User.Identity!.Name</h1>
+		<h1 style="margin-right: 20px" class="text-warning">@User.Identity!.Name</h1>
 		<a class="btn btn-danger my-2 my-sm-1" style="margin-left: auto" asp-action="Logout" asp-controller="Account">Logout</a>
 	}
 </div>

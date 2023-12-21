@@ -95,6 +95,7 @@ namespace MyDuoCards.Controllers
 			//await _context.SaveChangesAsync();
 
 			//return Redirect(ReturnUrl);
+
 			return RedirectToAction("Index", "Home");
 		}
 

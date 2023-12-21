@@ -16,7 +16,7 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                @if (User.Identity.IsAuthenticated)
+                @if (User.Identity!.IsAuthenticated)
                 {
                     <div class="collapse navbar-collapse" id="navbarColor02">
                         <ul class="navbar-nav me-auto">
@@ -43,8 +43,6 @@
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
                                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop4" style="">
-                                            @* <a class="dropdown-item" asp-area="" asp-action="Index" asp-controller="Options">Options</a>
-                                        <div class="dropdown-divider">Admin Extentions</div> *@
                                             <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Roles" asp-action="Index">Roles</a>
                                             <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
                                             <a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Dictionaries" asp-action="Index">Dictionaries</a>
@@ -55,10 +53,6 @@
                                 </li>
                             }
                         </ul>
-                        @* <form class="d-flex">
-                            <input class="form-control me-sm-2" type="search" placeholder="Search" spellcheck="false" data-ms-editor="true">
-                            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-                        </form> *@
                     </div>
                 }
             </div>

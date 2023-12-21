@@ -13,6 +13,7 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
+                <input type="hidden" name="page" value="@ViewData["page"]" />
                 <label asp-for="EnWriting" class="form-label mt-0"></label>
                 <input asp-for="EnWriting" class="form-control" />
                 <span asp-validation-for="EnWriting" class="text-danger"></span>

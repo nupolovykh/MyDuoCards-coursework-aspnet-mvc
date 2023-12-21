@@ -31,10 +31,6 @@ namespace MyDuoCards.Controllers
             userForView.Password = user.Password;
             userForView.RoleId = user.RoleId;
 
-            // var result = user
-            // var viewResult = View(result)
-            // return viewResult
-
             return View(userForView);
 		}
 
@@ -44,41 +40,59 @@ namespace MyDuoCards.Controllers
         {
             if (ModelState.IsValid)
             {
-                try
-                {
-                    var user = await _context.Users
-                    .Where(u => u.Login == User.Identity.Name)
+                var user = await _context.Users
+                    .Where(u => u.Login == User.Identity!.Name)
                     .Include(u => u.Role)
                     .SingleOrDefaultAsync();
 
-                    user.Login = model.Login;
-                    user.Email = model.Email;
+                if (user == null)
+                {
+                    ModelState.AddModelError("EdittingError", "User not found");
+                    return View(model);
+                }
 
-                    if (user.Password != model.Password)
-                    {
-                        if (model.Password == model.ConfirmPassword)
-                        {
-                            user.Password = model.Password.ToHash();
-                        }
-                        else
-                        {
-                            ModelState.AddModelError("EdittingError", "Changing password failed");
-                            return View(model);
-                        }
-                    }
+                if (user.Login != model.Login && await _context.Users.AnyAsync(u => u.Login == model.Login))
+                {
+                    ModelState.AddModelError("EdittingError", "Login already exists");
+                    return View(model);
+                }
 
+                if (user.Email != model.Email && await _context.Users.AnyAsync(u => u.Email == model.Email))
+                {
+                    ModelState.AddModelError("EdittingError", "Email already exists");
+                    return View(model);
+                }
+
+                user.Login = model.Login;
+                user.Email = model.Email;
+
+                if (!string.IsNullOrEmpty(model.Password) && model.Password != model.ConfirmPassword)
+                {
+                    ModelState.AddModelError("EdittingError", "Passwords do not match");
+                    return View(model);
+                }
+
+                if (!string.IsNullOrEmpty(model.Password) && user.Password != model.Password)
+                {
+                    user.Password = model.Password.ToHash();
+                }
+
+                try
+                {
                     _context.Update(user);
-
                     await _context.SaveChangesAsync();
 
                     await HttpContext.SignInAsync(user.ClaimCreator());
+
+                    return RedirectToAction("Index", "Home");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     throw;
                 }
             }
-            return RedirectToAction("Index", "Home");
+
+            return View(model);
         }
 
     }
