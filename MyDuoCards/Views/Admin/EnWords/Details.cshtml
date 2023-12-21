@@ -24,6 +24,6 @@
 </div>
 
 <div class="form-group d-flex" style="margin-top: 10px">
-    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
-    <a class="btn btn-light" style="margin-left: 10px" asp-action="Index">Back to List</a>
+    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@Model?.Id" asp-route-page="@ViewData["page"]" asp-route-searchString="@ViewData["searchString"]">Edit</a>
+    <a class="btn btn-light" style="margin-left: 10px" asp-action="Index" asp-route-page="@ViewData["page"]" asp-route-searchString="@ViewData["searchString"]">Back to List</a>
 </div>

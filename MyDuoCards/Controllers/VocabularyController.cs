@@ -14,11 +14,12 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MyDuoCards.Controllers
 {
-	[Authorize]
+    [Authorize]
     public class VocabularyController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationContext _context;
+        private int quantityOfElements = Constants.AmountOfCardsVocabulary;
 
         public VocabularyController(ILogger<HomeController> logger, ApplicationContext context)
         {
@@ -29,7 +30,6 @@ namespace MyDuoCards.Controllers
 
 		public async Task<IActionResult> Index(string? searchString, int page = 1)
         {
-            int quantityOfElements = 20;
             ViewData["searchString"] = searchString;
 			ViewData["page"] = page;
 
@@ -69,8 +69,9 @@ namespace MyDuoCards.Controllers
 			List<int> list = null;
 			if (count != 0)
 			{
-				int maxIndex = (count / quantityOfElements) + 1;
-				list = ListBuilderForButtons.GetButtonIndexes(page, maxIndex);
+				int maxIndex = (count / quantityOfElements);
+                if (count % quantityOfElements != 0) maxIndex++;
+                list = ListBuilderForButtons.GetButtonIndexes(page, maxIndex);
 			}
 			ViewData["list"] = list;
 

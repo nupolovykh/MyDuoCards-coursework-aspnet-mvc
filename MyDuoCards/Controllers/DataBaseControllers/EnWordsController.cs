@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyDuoCards.Models;
 using MyDuoCards.Models.DBModels;
@@ -12,13 +7,14 @@ using MyDuoCards.Models.Extensions;
 
 namespace MyDuoCards.Controllers.DataBaseControllers
 {
-	[Area("Admin")]
+    [Area("Admin")]
 	[Authorize(Roles = "Admin")]
 	public class EnWordsController : Controller
 	{
 		private readonly ApplicationContext _context;
+        private int quantityOfElements = Constants.AmountOfLanguageTableElements;
 
-		public EnWordsController(ApplicationContext context)
+        public EnWordsController(ApplicationContext context)
 		{
 			_context = context;
 		}
@@ -26,7 +22,6 @@ namespace MyDuoCards.Controllers.DataBaseControllers
 		// GET: EnWords
 		public async Task<IActionResult> Index(string? searchString, int page = 1)
 		{
-			int quantityOfElements = 10;
 			ViewData["page"] = page;
 			ViewData["searchString"] = searchString;
 
@@ -51,7 +46,9 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             List<int> list = null;
             if (count != 0)
             {
-                int maxIndex = (count / quantityOfElements) + 1;
+                int maxIndex = (count / quantityOfElements);
+				if (count % quantityOfElements != 0) maxIndex++;
+
                 list = ListBuilderForButtons.GetButtonIndexes(page, maxIndex);
             }
             ViewData["list"] = list;
@@ -62,9 +59,12 @@ namespace MyDuoCards.Controllers.DataBaseControllers
 		}
 
 		// GET: EnWords/Details/5
-		public async Task<IActionResult> Details(int? id)
+		public async Task<IActionResult> Details(int id, string? searchString, int page = 1)
 		{
-			if (id == null || _context.EnWords == null)
+            ViewData["page"] = page;
+            ViewData["searchString"] = searchString;
+
+            if (id == null || _context.EnWords == null)
 			{
 				return NotFound();
 			}
@@ -80,31 +80,36 @@ namespace MyDuoCards.Controllers.DataBaseControllers
 		}
 
 		// GET: EnWords/Create
-		public IActionResult Create()
+		public IActionResult Create(int? page)
 		{
+			ViewData["page"] = page;
 			return View();
 		}
 
 		// POST: EnWords/Create
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,EnWriting")] EnWord enWord)
+		public async Task<IActionResult> Create([Bind("Id,EnWriting")] EnWord enWord, int page = 1)
 		{
-			if (ModelState.IsValid)
+            if (ModelState.IsValid)
 			{
 				_context.Add(enWord);
 				await _context.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
+				return RedirectToAction(nameof(Index), new { page = page });
 			}
 			return View(enWord);
 		}
 
 		// GET: EnWords/Edit/5
-		public async Task<IActionResult> Edit(int? id)
+		public async Task<IActionResult> Edit(string? searchString, int? id, int? page = 1)
 		{
-			if (id == null || _context.EnWords == null)
+            ViewData["page"] = page;
+            ViewData["searchString"] = searchString;
+
+            if (id == null || _context.EnWords == null)
 			{
 				return NotFound();
 			}
@@ -120,9 +125,10 @@ namespace MyDuoCards.Controllers.DataBaseControllers
 		// POST: EnWords/Edit/5
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, [Bind("Id,EnWriting")] EnWord enWord)
+		public async Task<IActionResult> Edit(string? searchString, int id, [Bind("Id,EnWriting")] EnWord enWord, int? page)
 		{
 			if (id != enWord.Id)
 			{
@@ -147,15 +153,19 @@ namespace MyDuoCards.Controllers.DataBaseControllers
 						throw;
 					}
 				}
-				return RedirectToAction(nameof(Index));
+
+                return RedirectToAction(nameof(Index), new { page = page.ToString(), searchString = searchString});
 			}
 			return View(enWord);
 		}
 
 		// GET: EnWords/Delete/5
-		public async Task<IActionResult> Delete(int? id)
+		public async Task<IActionResult> Delete(int? id, string? searchString, int page = 1)
 		{
-			if (id == null || _context.EnWords == null)
+			ViewData["page"] = page;
+            ViewData["searchString"] = searchString;
+
+            if (id == null || _context.EnWords == null)
 			{
 				return NotFound();
 			}
@@ -173,7 +183,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
 		// POST: EnWords/Delete/5
 		[HttpPost, ActionName("Delete")]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> DeleteConfirmed(int id)
+		public async Task<IActionResult> DeleteConfirmed(int id, string? searchString, int page = 1)
 		{
 			if (_context.EnWords == null)
 			{
@@ -186,12 +196,12 @@ namespace MyDuoCards.Controllers.DataBaseControllers
 			}
 			
 			await _context.SaveChangesAsync();
-			return RedirectToAction(nameof(Index));
+			return RedirectToAction(nameof(Index), new { page = page.ToString(), searchString = searchString });
 		}
 
 		private bool EnWordExists(int id)
 		{
 		  return (_context.EnWords?.Any(e => e.Id == id)).GetValueOrDefault();
 		}
-	}
+    }
 }

@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyDuoCards.Models;
 using MyDuoCards.Models.DBModels;
 using MyDuoCards.Models.Extensions;
-using NuGet.Packaging.Signing;
 
 namespace MyDuoCards.Controllers.DataBaseControllers
 {
@@ -18,6 +13,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
     public class RuWordsController : Controller
     {
         private readonly ApplicationContext _context;
+        private int quantityOfElements = Constants.AmountOfLanguageTableElements;
 
         public RuWordsController(ApplicationContext context)
         {
@@ -27,7 +23,6 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // GET: RuWords
         public async Task<IActionResult> Index(string? searchString, int page = 1)
         {
-            int quantityOfElements = 10;
             ViewData["page"] = page;
             ViewData["searchString"] = searchString;
 
@@ -52,7 +47,9 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             List<int> list = null;
             if (count != 0)
             {
-                int maxIndex = (count / quantityOfElements) + 1;
+                int maxIndex = (count / quantityOfElements);
+                if (count % quantityOfElements != 0) maxIndex++;
+
                 list = ListBuilderForButtons.GetButtonIndexes(page, maxIndex);
             }
             ViewData["list"] = list;
@@ -61,8 +58,11 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         }
 
         // GET: RuWords/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, string? searchString, int page = 1)
         {
+            ViewData["page"] = page;
+            ViewData["searchString"] = searchString;
+
             if (id == null || _context.RuWords == null)
             {
                 return NotFound();
@@ -80,32 +80,37 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         }
 
         // GET: RuWords/Create
-        public IActionResult Create()
+        public IActionResult Create(int? page)
         {
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "EnWriting");
+            ViewData["page"] = page;
+            ViewData["EnWordId"] = new SelectList(_context.EnWords.Where(u => u.RuWord == null), "Id", "EnWriting");
             return View();
         }
 
         // POST: RuWords/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,RuWriting,EnWordId")] RuWord ruWord)
+        public async Task<IActionResult> Create([Bind("Id,RuWriting,EnWordId")] RuWord ruWord, int page = 1)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(ruWord);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { page = page });
             }
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "EnWriting", ruWord.EnWordId);
+            ViewData["EnWordId"] = new SelectList(_context.EnWords.Where(u => u.RuWord == null), "Id", "EnWriting", ruWord.EnWordId);
             return View(ruWord);
         }
 
         // GET: RuWords/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string? searchString, int? id, int? page = 1)
         {
+            ViewData["page"] = page;
+            ViewData["searchString"] = searchString;
+
             if (id == null || _context.RuWords == null)
             {
                 return NotFound();
@@ -116,16 +121,17 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             {
                 return NotFound();
             }
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "EnWriting", ruWord.EnWordId);
+            ViewData["EnWordId"] = new SelectList(_context.EnWords.Where(u => u.RuWord == null), "Id", "EnWriting", ruWord.EnWordId);
             return View(ruWord);
         }
 
         // POST: RuWords/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,RuWriting,EnWordId")] RuWord ruWord)
+        public async Task<IActionResult> Edit(string? searchString, int? page, int id, [Bind("Id,RuWriting,EnWordId")] RuWord ruWord)
         {
             if (id != ruWord.Id)
             {
@@ -150,15 +156,18 @@ namespace MyDuoCards.Controllers.DataBaseControllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { page = page.ToString(), searchString = searchString });
             }
-            ViewData["EnWordId"] = new SelectList(_context.EnWords, "Id", "EnWriting", ruWord.EnWordId);
+            ViewData["EnWordId"] = new SelectList(_context.EnWords.Where(u => u.RuWord == null), "Id", "EnWriting", ruWord.EnWordId);
             return View(ruWord);
         }
 
         // GET: RuWords/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, string? searchString, int page = 1)
         {
+            ViewData["page"] = page;
+            ViewData["searchString"] = searchString;
+
             if (id == null || _context.RuWords == null)
             {
                 return NotFound();
@@ -178,7 +187,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
         // POST: RuWords/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, string? searchString, int page = 1)
         {
             if (_context.RuWords == null)
             {
@@ -191,7 +200,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { page = page.ToString(), searchString = searchString });
         }
 
         private bool RuWordExists(int id)

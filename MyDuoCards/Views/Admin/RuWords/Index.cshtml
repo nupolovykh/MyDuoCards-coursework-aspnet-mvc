@@ -8,7 +8,16 @@
 <h1>Russian Words</h1>
 
 <div class="d-flex">
-    <a class="btn btn-success" asp-action="Create" style="margin-right: auto">Create New</a>
+    @{
+        int last = 1;
+    }
+    @if (ViewData["list"] != null && ViewData["searchString"] == null)
+    {
+        var list = (List<int>)ViewData["list"];
+        last = list.Last();
+    }
+    <a class="btn btn-success" asp-action="Create" asp-route-page="@last" style="margin-right: auto">Create New</a>
+
     <form asp-controller="RuWords" asp-action="Index" method="get">
         <div class="d-flex">
             <input class="form-control me-sm-2" type="text" name="searchString" value="@ViewData["searchString"]" />
@@ -58,10 +67,10 @@
                      <strong>@Html.DisplayFor(modelItem => item.RuWriting)</strong>
                 </span>
             </td>
-                <td width="75%">
-                <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.Id">Details</a>
-                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            <td width="75%">
+                <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id" asp-route-page="@ViewData["page"]" asp-route-searchString="@ViewData["searchString"]">Edit</a>
+                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.Id" asp-route-page="@ViewData["page"]" asp-route-searchString="@ViewData["searchString"]">Details</a>
+                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id" asp-route-page="@ViewData["page"]" asp-route-searchString="@ViewData["searchString"]">Delete</a>
             </td>
         </tr>
 }

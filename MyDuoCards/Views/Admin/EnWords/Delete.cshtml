@@ -23,9 +23,9 @@
         </dd>
     </dl>
     
-    <form asp-action="Delete" style="margin-top: 10px">
+    <form asp-action="Delete" asp-route-page="@ViewData["page"]" asp-route-searchString="@ViewData["searchString"]" style="margin-top: 10px">
         <input type="hidden" asp-for="Id" />
         <input class="btn btn-danger" style="margin-right: 10px" type="submit" value="Delete" />
-        <a class="btn btn-light" asp-action="Index">Back to List</a>
+        <a class="btn btn-light" asp-action="Index" asp-route-page="@ViewData["page"]" asp-route-searchString="@ViewData["searchString"]">Back to List</a>
     </form>
 </div>
