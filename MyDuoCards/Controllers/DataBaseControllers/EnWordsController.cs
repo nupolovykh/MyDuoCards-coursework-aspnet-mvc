@@ -12,7 +12,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
 	public class EnWordsController : Controller
 	{
 		private readonly ApplicationContext _context;
-        private int quantityOfElements = Constants.AmountOfLanguageTableElements;
+        private int amountOfElements = Constants.AmountOfLanguageTableElements;
 
         public EnWordsController(ApplicationContext context)
 		{
@@ -38,16 +38,16 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             }
 
             var applicationContext = modelEnPlus
-                .Skip((page - 1) * quantityOfElements)
-				.Take(quantityOfElements);
+                .Skip((page - 1) * amountOfElements)
+				.Take(amountOfElements);
 
             var count = modelEnPlus.Count();
 
             List<int> list = null;
             if (count != 0)
             {
-                int maxIndex = (count / quantityOfElements);
-				if (count % quantityOfElements != 0) maxIndex++;
+                int maxIndex = (count / amountOfElements);
+				if (count % amountOfElements != 0) maxIndex++;
 
                 list = ListBuilderForButtons.GetButtonIndexes(page, maxIndex);
             }

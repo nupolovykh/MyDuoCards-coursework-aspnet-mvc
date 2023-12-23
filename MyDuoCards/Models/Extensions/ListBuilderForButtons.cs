@@ -2,14 +2,15 @@
 {
 	public static class ListBuilderForButtons
 	{
-		public static List<int> GetButtonIndexes(int currentIndex, int totalNumberOfPages)
+        public static List<int> GetButtonIndexes(int currentIndex, int totalNumberOfPages)
 		{
-			List<int> buttonIndexes = new List<int>();
+            int amountOfButtons = Constants.AmountOFButtonsOnTheSides;
+            List<int> buttonIndexes = new List<int>();
 
 			buttonIndexes.Add(1);
 			buttonIndexes.Add(totalNumberOfPages);
 
-			for (int i = currentIndex - 3; i <= currentIndex + 3; i++)
+			for (int i = currentIndex - amountOfButtons; i <= currentIndex + amountOfButtons; i++)
 			{
 				if (i > 1 && i < totalNumberOfPages)
 				{
