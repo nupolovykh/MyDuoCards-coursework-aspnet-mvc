@@ -5,5 +5,6 @@
         public const int AmountOfLanguageTableElements = 10;
         public const int AmountOfCardsHome = 13;
         public const int AmountOfCardsVocabulary = 20;
+        public const int AmountOFButtonsOnTheSides = 3;
     }
 }

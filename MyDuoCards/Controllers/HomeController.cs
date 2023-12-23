@@ -19,7 +19,7 @@ namespace MyDuoCards.Controllers
 	{
 		private readonly ILogger<HomeController> _logger;
 		private readonly ApplicationContext _context;
-        private int quantityOfElements = Constants.AmountOfCardsHome;
+        private int amountOfElements = Constants.AmountOfCardsHome;
 
         public HomeController(ILogger<HomeController> logger, ApplicationContext context)
 		{
@@ -80,16 +80,16 @@ namespace MyDuoCards.Controllers
 			else modelRuPlus = await modelRu.ToListAsync();
 
 			var viewModel = modelRuPlus.Where(ruWord => ruWord.EnWord!.Dictionaries!.Any(dict => dict.User!.Login == User.Identity!.Name))
-				.Skip((page - 1) * quantityOfElements)
-				.Take(quantityOfElements);
+				.Skip((page - 1) * amountOfElements)
+				.Take(amountOfElements);
 
 			var count = modelRuPlus.Where(ruWord => ruWord.EnWord!.Dictionaries!.Any(dict => dict.User!.Login == User.Identity!.Name)).Count();
 
 			List<int> list = null;
 			if(count != 0)
 			{
-                int maxIndex = (count / quantityOfElements);
-                if (count % quantityOfElements != 0) maxIndex++;
+                int maxIndex = (count / amountOfElements);
+                if (count % amountOfElements != 0) maxIndex++;
                 list = ListBuilderForButtons.GetButtonIndexes(page, maxIndex);
 			}
 			ViewData["list"] = list;

@@ -13,7 +13,7 @@ namespace MyDuoCards.Controllers.DataBaseControllers
     public class RuWordsController : Controller
     {
         private readonly ApplicationContext _context;
-        private int quantityOfElements = Constants.AmountOfLanguageTableElements;
+        private int amountOfElements = Constants.AmountOfLanguageTableElements;
 
         public RuWordsController(ApplicationContext context)
         {
@@ -39,16 +39,16 @@ namespace MyDuoCards.Controllers.DataBaseControllers
             }
 
             var applicationContext = modelRuPlus
-                .Skip((page - 1) * quantityOfElements)
-                .Take(quantityOfElements);
+                .Skip((page - 1) * amountOfElements)
+                .Take(amountOfElements);
 
             var count = modelRuPlus.Count();
 
             List<int> list = null;
             if (count != 0)
             {
-                int maxIndex = (count / quantityOfElements);
-                if (count % quantityOfElements != 0) maxIndex++;
+                int maxIndex = (count / amountOfElements);
+                if (count % amountOfElements != 0) maxIndex++;
 
                 list = ListBuilderForButtons.GetButtonIndexes(page, maxIndex);
             }
