@@ -19,7 +19,7 @@ namespace MyDuoCards.Models
 
 		public DbSet<RuWord> RuWords { get; set; } = null!;
 
-        public DbSet<Attandance> Attandances { get; set; } = null!;
+        public DbSet<Attendance> Attendances { get; set; } = null!;
 
         public DbSet<DictionaryStatement> DictionaryStatements { get; set; } = null!;
 
@@ -67,8 +67,8 @@ namespace MyDuoCards.Models
             modelBuilder.Entity<User>()
                 .HasData(new User { Id = 1, Login = "Minako", Email = "venus@su", Password = "beam".ToHash(), RoleId = 1 });
 
-            modelBuilder.Entity<Attandance>()
-                .HasData(new Attandance { Id = 1, UserId = 1, Time = DateTime.Now });
+            modelBuilder.Entity<Attendance>()
+                .HasData(new Attendance { Id = 1, UserId = 1, Time = DateTime.UtcNow});
 
 			var fakerEn = new Faker("en");
 			var fakerRu = new Faker("ru");

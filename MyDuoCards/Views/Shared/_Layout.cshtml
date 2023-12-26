@@ -52,6 +52,12 @@
                                         </div>
                                 </li>
                             }
+                            <li class="nav-item" style="margin-top: auto; margin-bottom: auto;">
+                                <h5 class="text-success" style="margin: auto 10px">Your attendance streak:</h5>
+                            </li>
+                            <li class="nav-item" id="LastAttendance" style="margin-top: auto; margin-bottom: auto;">
+                                <h5 class="text-success" style="margin: auto 0px">Loading</h5>
+                            </li>
                         </ul>
                     </div>
                 }
@@ -72,9 +78,51 @@
             &copy; 2023 - MyDuoCards - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    @if (User.Identity!.IsAuthenticated)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/Home/AttendanceGET",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data) {
+                            //alert(typeof(data));
+                            console.log("success!");
+                            $('#LastAttendance').empty();
+                            var h5Element = $('<h5>').text(data).attr('style', 'margin: auto 0px').addClass('text-success');
+                            $('#LastAttendance').append(h5Element);
+                        } else {
+                            console.log('No attendance data available');
+                        }
+                    },
+                    error: function (xhr) {
+                        alert(xhr.status + ' Ошибка');
+                    }
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/AttendancePOST",
+                    success: function () {
+                        console.log("Attendance successfully posted");
+                    },
+                    error: function (xhr) {
+                        console.error('Failed to post attendance: ' + xhr.status);
+                    }
+                });
+            });
+        </script>
+    }
+
+
+
 </body>
 </html>

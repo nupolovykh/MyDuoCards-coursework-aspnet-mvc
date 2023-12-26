@@ -44,11 +44,13 @@ namespace MyDuoCards.Controllers
 				return View(regUser);
 			}
 
-			var user = new User();
-			user.Login = regUser.Login;
-			user.Email = regUser.Email;
-			user.Password = regUser.Password.ToHash();
-            user.RoleId = 2;
+			var user = new User()
+			{
+                Login = regUser.Login,
+				Email = regUser.Email,
+				Password = regUser.Password.ToHash(),
+				RoleId = 2
+			};
 
 
             _context.Users.Add(user);
@@ -89,10 +91,6 @@ namespace MyDuoCards.Controllers
 			}
 
             await HttpContext.SignInAsync(userToLogin.ClaimCreator());
-
-			//user.Attandances!.Add(new Attandance() { Time = DateTime.UtcNow });
-			////_context.Attandances.Add((new Attandance { UserId = user.Id, Time = DateTime.Now}));
-			//await _context.SaveChangesAsync();
 
 			//return Redirect(ReturnUrl);
 
