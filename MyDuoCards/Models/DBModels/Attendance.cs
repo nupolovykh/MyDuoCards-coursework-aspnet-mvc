@@ -5,7 +5,7 @@ using System.Reflection.Metadata;
 
 namespace MyDuoCards.Models.DBModels
 {
-	public class Attandance
+	public class Attendance
 	{
 		[Key]
 		public int Id { get; set; }

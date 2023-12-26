@@ -24,12 +24,14 @@ namespace MyDuoCards.Controllers
                 .Include(u => u.Role)
                 .SingleOrDefaultAsync();
 
-            EditUserModel userForView = new EditUserModel();
-            userForView.Login = user.Login;
-            userForView.Email = user.Email;
-            userForView.RoleName = user.Role.Name;
-            userForView.Password = user.Password;
-            userForView.RoleId = user.RoleId;
+            EditUserModel userForView = new EditUserModel
+            {
+                Login = user.Login,
+                Email = user.Email,
+                RoleName = user.Role.Name,
+                Password = user.Password,
+                RoleId = user.RoleId
+            };
 
             return View(userForView);
 		}

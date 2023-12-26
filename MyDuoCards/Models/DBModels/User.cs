@@ -14,6 +14,6 @@ namespace MyDuoCards.Models.DBModels
 
         public List<Dictionary>? Dictionaries { get; set; }
 
-		public ICollection<Attandance>? Attandances { get; set; }
+		public ICollection<Attendance>? Attendances { get; set; }
 	}
 }

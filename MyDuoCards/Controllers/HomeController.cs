@@ -11,6 +11,7 @@ using MyDuoCards.Models.ViewModels;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 
 namespace MyDuoCards.Controllers
 {
@@ -27,30 +28,10 @@ namespace MyDuoCards.Controllers
 			_context = context;
 		}
 
-		public async Task<IActionResult> Index(string? searchString = "", int page = 1)
+        public async Task<IActionResult> Index(string? searchString = "", int page = 1)
 		{
             ViewData["searchString"] = searchString;
 			ViewData["page"] = page;
-
-			var user = await _context.Users
-				.Include(usr => usr.Attandances)
-				.SingleOrDefaultAsync(u => u.Login == User.Identity!.Name);
-
-			{
-                ////var previousPageUrl = Request.Headers["Referer"].ToString();
-
-                ////foreach (var header in Request.Headers)
-                ////{
-                ////	_logger.LogWarning($"{header.Key}  ---   {header.Value}");
-                ////}
-
-                //if (user != null)		// this logic should be did over !!!!!!!!!!!!!!!!
-                //{
-                //	user.Attandances!.Add(new Attandance() { Time = DateTime.UtcNow });
-                //	//_context.Attandances.Add((new Attandance { UserId = user.Id, Time = DateTime.Now}));
-                //	await _context.SaveChangesAsync();
-                //}
-            }	//not so important work
 
             var modelRu = _context.RuWords
 					.Include(ruWord => ruWord.EnWord)
@@ -101,5 +82,43 @@ namespace MyDuoCards.Controllers
 		{
 			return View();
 		}
-	}
+
+        [HttpGet]
+        public async Task<JsonResult> AttendanceGET()
+        {
+			var attendance = await _context.Attendances
+				.Include(a => a.User)
+				.Where(a => a.User.Login == User.Identity!.Name).ToListAsync();
+
+            if (attendance == null)
+            {
+                return Json(0);
+            }
+
+            return Json(attendance.Count);
+        }
+
+        [HttpPost]
+        public async void AttendancePOST()
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Login == User.Identity!.Name);
+
+            if (user != null)
+            {
+                var lastAttendance = await _context.Attendances
+                .Include(a => a.User)
+                .Where(a => a.User.Login == User.Identity.Name)
+                .OrderByDescending(a => a.Time)
+                .FirstOrDefaultAsync();
+
+                DateTime subtractedDate = DateTime.UtcNow.AddDays(-(Constants.TimeIntervalForAttendances));
+
+                if (lastAttendance == null || lastAttendance.Time < subtractedDate)
+                {
+                    _context.Attendances.Add((new Attendance { UserId = user.Id, Time = DateTime.UtcNow }));
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
+    }
 }
