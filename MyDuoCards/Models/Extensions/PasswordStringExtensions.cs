@@ -1,22 +1,34 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+using System.Security.Cryptography;
 
 namespace MyDuoCards.Models.Extensions
 {
 	static class PasswordStringExtensions
 	{
+		private const int SaltSize = 16;
+		private const int HashSize = 32;
+		private const int Iterations = 100_000;
+
 		public static string ToHash(this string pswd)
 		{
-			var bytes = Encoding.UTF8.GetBytes(pswd);
-			var hashedBytes = SHA256.HashData(bytes);
+			var salt = RandomNumberGenerator.GetBytes(SaltSize);
+			var hash = Rfc2898DeriveBytes.Pbkdf2(pswd, salt, Iterations, HashAlgorithmName.SHA256, HashSize);
 
-			StringBuilder sb = new StringBuilder();
-			foreach (var item in hashedBytes)
+			return $"{Iterations}.{Convert.ToBase64String(salt)}.{Convert.ToBase64String(hash)}";
+		}
+
+		public static bool VerifyHash(this string pswd, string storedHash)
+		{
+			var parts = storedHash.Split('.', 3);
+			if (parts.Length != 3 || !int.TryParse(parts[0], out var iterations))
 			{
-				sb.Append(item);
+				return false;
 			}
 
-			return sb.ToString();
+			var salt = Convert.FromBase64String(parts[1]);
+			var expectedHash = Convert.FromBase64String(parts[2]);
+			var actualHash = Rfc2898DeriveBytes.Pbkdf2(pswd, salt, iterations, HashAlgorithmName.SHA256, expectedHash.Length);
+
+			return CryptographicOperations.FixedTimeEquals(actualHash, expectedHash);
 		}
 	}
 }
