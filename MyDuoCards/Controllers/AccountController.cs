@@ -83,7 +83,7 @@ namespace MyDuoCards.Controllers
 				ModelState.AddModelError("isLoginFailed", "Bad login or email");
 				return View(loginUser);
 			}
-			if (userToLogin?.Password != loginUser.Password.ToHash())
+			if (!loginUser.Password.VerifyHash(userToLogin.Password))
 			{
 				_logger.LogWarning("At {time} Failed login attempt was made with {login}", DateTime.Now.ToString("u"), loginUser.LoginOrEmail);
 				ModelState.AddModelError("isLoginFailed", "Bad password");
