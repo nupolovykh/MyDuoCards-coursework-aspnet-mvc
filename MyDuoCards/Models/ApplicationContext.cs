@@ -97,18 +97,5 @@ namespace MyDuoCards.Models
             modelBuilder.Entity<DictionaryStatement>().HasData(dictionaryStatements);
 
         }
-
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            string databasePath = CreatingPath();
-            optionsBuilder.UseSqlite($"Data Source={databasePath}");
-        }
-
-        private string CreatingPath()
-        {
-            string currentDirectory = Directory.GetCurrentDirectory();
-            string parentDirectory = Directory.GetParent(currentDirectory)!.FullName;
-            return Path.Combine(parentDirectory, "SQLiteDatabaseBrowserPortable", "Database", "fiction.db");
-        }
     }
 }
