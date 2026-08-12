@@ -1,0 +1,141 @@
+name: Build & Integration Smoke Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore MyDuoCards/MyDuoCards.sln
+
+      - name: Build
+        run: dotnet build MyDuoCards/MyDuoCards.sln --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish MyDuoCards/MyDuoCards.csproj --configuration Release --no-build -o ./publish
+
+      - name: Boot the app
+        run: |
+          set -e
+          cd publish
+
+          export ASPNETCORE_URLS="http://localhost:5080"
+          export ASPNETCORE_ENVIRONMENT=Development
+
+          nohup dotnet MyDuoCards.dll > app.log 2>&1 &
+          echo $! > app.pid
+
+          up=false
+          for i in $(seq 1 30); do
+            if curl -s -o /dev/null http://localhost:5080/; then
+              up=true
+              break
+            fi
+            sleep 1
+          done
+
+          if [ "$up" != "true" ]; then
+            echo "App never came up within 30s"
+            cat app.log
+            exit 1
+          fi
+
+      # A plain "does it compile" build says nothing about whether the app
+      # actually works. This exercises the real register -> login path over
+      # HTTP against the running app: EF Core's Database.EnsureCreated() +
+      # seed data, the salted PBKDF2 password hashing/verification in
+      # PasswordStringExtensions (ToHash on register, VerifyHash on login),
+      # cookie-auth issuance, and MVC routing all have to work together for
+      # this to pass - not just that the project builds.
+      - name: Functional smoke test (register -> login round trip)
+        run: |
+          set -e
+
+          base="http://localhost:5080"
+          cookies=$(mktemp)
+          stamp=$(date +%s)
+          login="citest_${stamp}"
+          email="citest_${stamp}@example.com"
+          password="Correct-Horse-Battery-Staple-1"
+
+          # 1. Default route (Account/Login) renders - proves DI wiring, EF
+          #    seeding, and view rendering didn't crash at startup.
+          status=$(curl -s -o /dev/null -w '%{http_code}' "$base/")
+          echo "GET / -> $status"
+          if [ "$status" != "200" ]; then
+            echo "FAIL: expected 200 from GET /, got $status"
+            cat publish/app.log
+            exit 1
+          fi
+
+          # 2. Register a throwaway user. AccountController.Register has no
+          #    [ValidateAntiForgeryToken], so a plain form POST works. On
+          #    success it redirects (302) to Login.
+          status=$(curl -s -o /dev/null -w '%{http_code}' \
+            -X POST "$base/Account/Register" \
+            --data-urlencode "Login=$login" \
+            --data-urlencode "Email=$email" \
+            --data-urlencode "Password=$password" \
+            --data-urlencode "ConfirmPassword=$password")
+          echo "POST /Account/Register -> $status"
+          if [ "$status" != "302" ]; then
+            echo "FAIL: expected 302 (redirect to Login) from register, got $status"
+            cat publish/app.log
+            exit 1
+          fi
+
+          # 3. Log in with the exact credentials just registered. On success
+          #    this redirects (302) to Home/Index and sets the auth cookie -
+          #    only possible if the password that was just hashed on
+          #    register verifies correctly on login.
+          status=$(curl -s -o /dev/null -w '%{http_code}' -c "$cookies" \
+            -X POST "$base/Account/Login" \
+            --data-urlencode "LoginOrEmail=$login" \
+            --data-urlencode "Password=$password")
+          echo "POST /Account/Login -> $status"
+          if [ "$status" != "302" ]; then
+            echo "FAIL: expected 302 (redirect to Home) from login, got $status"
+            cat publish/app.log
+            exit 1
+          fi
+
+          if ! grep -qi "\.AspNetCore\.\(Cookies\|Identity\)" "$cookies"; then
+            echo "FAIL: no auth cookie present after login"
+            cat "$cookies"
+            cat publish/app.log
+            exit 1
+          fi
+
+          # 4. The SQLite file should now actually exist on disk - proves the
+          #    DB-path fix (config-driven ConnectionStrings:Default) and
+          #    Database.EnsureCreated() worked end to end, not just that
+          #    Program.cs compiles.
+          if [ ! -f "publish/Database/fiction.db" ]; then
+            echo "FAIL: expected publish/Database/fiction.db to exist after register+login"
+            find publish -iname "*.db" -o -iname "*.db-*"
+            exit 1
+          fi
+
+          echo "Smoke test passed: GET /, register, login, and DB file creation all behaved as expected."
+
+      - name: Stop the app
+        if: always()
+        run: |
+          if [ -f publish/app.pid ]; then
+            kill "$(cat publish/app.pid)" 2>/dev/null || true
+          fi
