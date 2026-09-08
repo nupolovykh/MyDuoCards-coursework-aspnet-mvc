@@ -4,7 +4,7 @@ A web application for learning English words using flashcards: a shared vocabula
 
 A third-year course project (VKI NSU, 2023) built with ASP.NET Core MVC + EF Core + SQLite.
 
-[![Build & Integration Smoke Test](https://github.com/nupolovykh/MyDuoCards-3rd-course-asp-net/actions/workflows/build-and-smoke-test.yml/badge.svg)](https://github.com/nupolovykh/MyDuoCards-3rd-course-asp-net/actions/workflows/build-and-smoke-test.yml)
+[![Build & Integration Smoke Test](https://github.com/nupolovykh/MyDuoCards-coursework-aspnet-mvc/actions/workflows/build-and-smoke-test.yml/badge.svg)](https://github.com/nupolovykh/MyDuoCards-coursework-aspnet-mvc/actions/workflows/build-and-smoke-test.yml)
 ![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4)
 ![SQLite](https://img.shields.io/badge/SQLite-embedded-003B57)
 
@@ -26,8 +26,8 @@ Only [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) is require
 the database will be created automatically.
 
 ```bash
-git clone https://github.com/nupolovykh/MyDuoCards-3rd-course-asp-net.git
-cd MyDuoCards-3rd-course-asp-net
+git clone https://github.com/nupolovykh/MyDuoCards-coursework-aspnet-mvc.git
+cd MyDuoCards-coursework-aspnet-mvc
 dotnet run --project MyDuoCards
 ```
 

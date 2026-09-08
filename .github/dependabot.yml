@@ -1,6 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: "nuget"
-    directory: "/"
+    directory: "/MyDuoCards"
+    target-branch: "security-features-main"
     schedule:
       interval: "weekly"
