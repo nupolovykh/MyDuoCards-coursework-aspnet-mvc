@@ -1,38 +1,127 @@
 name: Dependabot auto-merge
 
+# Dependency updates are raised against security-features-main and reach main
+# through one reviewed merge. This job is what moves them onto that branch, and
+# it merges nothing that CI has not passed.
+#
+# It cannot run from the pull_request event: a run raised by Dependabot gets a
+# read-only token. workflow_run executes in the default branch's context with
+# write access, which is what makes the merge possible.
+#
+# The schedule is not decoration. Two things make a green pull request sit here
+# forever otherwise:
+#
+#   * workflow_run is delivered with the run's conclusion attached, and that
+#     conclusion is occasionally not yet final. The job is then skipped by its
+#     own condition and nothing ever re-raises the event. One pull request was
+#     lost that way and had to be merged by hand.
+#   * a pull request that conflicts today usually stops conflicting once the
+#     branch ahead of it lands, but nothing re-triggers it.
+#
+# So the merge logic does not trust a single event: on every trigger it looks at
+# every open dependency pull request and merges whichever ones are ready.
+
 on:
   workflow_run:
     workflows: ["Build & Integration Smoke Test"]
     types: [completed]
+  schedule:
+    - cron: "23 * * * *"
+  workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
+  # An explicit block zeroes out everything it does not name, and reading a
+  # commit's check runs is refused without this one — the first sweep died on
+  # "Resource not accessible by integration (HTTP 403)" from
+  # /repos/{owner}/{repo}/commits/{sha}/check-runs while the pull request
+  # listing beside it returned 200.
+  checks: read
 
 jobs:
   auto-merge:
+    # On a workflow_run trigger, ignore runs that have nothing to do with a
+    # Dependabot pull request. The run's conclusion is deliberately not checked:
+    # it is read per pull request below, from the checks themselves, so a stale
+    # or missing conclusion in the event payload cannot drop anything.
     if: >-
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.actor.login == 'dependabot[bot]'
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.event == 'pull_request' &&
+       startsWith(github.event.workflow_run.head_branch, 'dependabot/'))
     runs-on: ubuntu-latest
     steps:
-      - name: Merge the pull request if it targets the dependency branch
+      - name: Merge every dependency pull request whose checks have passed
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           REPO: ${{ github.repository }}
         run: |
-          number=$(gh api "repos/$REPO/commits/$HEAD_SHA/pulls" \
-            --jq '.[]
-                  | select(.state == "open")
-                  | select(.base.ref == "security-features-main")
-                  | .number' | head -n1)
+          set -uo pipefail
 
-          if [ -z "$number" ]; then
-            echo "No open pull request against security-features-main for $HEAD_SHA."
+          # Listed over REST rather than with "gh pr list": that command goes
+          # through GraphQL, which the workflow token is refused on with
+          # "Resource not accessible by integration (HTTP 403)".
+          open=$(gh api --paginate \
+                   "repos/$REPO/pulls?state=open&base=security-features-main&per_page=100" \
+                   --jq '.[]
+                         | select(.user.login == "dependabot[bot]")
+                         | select(.head.ref | startswith("dependabot/"))
+                         | "\(.number)\t\(.head.sha)"')
+
+          if [ -z "$open" ]; then
+            echo "No open dependency pull requests."
             exit 0
           fi
 
-          echo "CI passed on $HEAD_SHA; merging #$number into security-features-main."
-          gh pr merge --squash --delete-branch --repo "$REPO" "$number"
+          while IFS=$'\t' read -r number sha; do
+            [ -n "$number" ] || continue
+
+            # GitHub computes mergeability lazily, so this is often "unknown" on
+            # a first read. That is not a problem: an unknown state falls
+            # through to the merge attempt below, which reports the conflict
+            # itself.
+            mergeable=$(gh api "repos/$REPO/pulls/$number" --jq '.mergeable_state')
+            if [ "$mergeable" = "dirty" ]; then
+              echo "#$number conflicts with the base branch; leaving it for Dependabot to rebase."
+              continue
+            fi
+
+            # A pull request's own checks, minus this job. Anything still running
+            # means "come back later", not "reject".
+            checks=$(gh api "repos/$REPO/commits/$sha/check-runs" --paginate \
+                       --jq '.check_runs[] | select(.name != "auto-merge") | "\(.status):\(.conclusion)"')
+
+            if [ -z "$checks" ]; then
+              echo "#$number has no checks yet; skipping."
+              continue
+            fi
+            if grep -qv '^completed:' <<<"$checks"; then
+              echo "#$number still has checks running; skipping."
+              continue
+            fi
+            if grep -qvE '^completed:(success|skipped|neutral)$' <<<"$checks"; then
+              echo "#$number has a failing check; leaving it open."
+              continue
+            fi
+
+            echo "#$number passed its checks on $sha; merging."
+
+            # REST for the same reason as the listing above: the GraphQL
+            # endpoints behind "gh pr merge" are refused to this token.
+            if gh api --method PUT "repos/$REPO/pulls/$number/merge" \
+                 -f merge_method=squash -f sha="$sha" >/dev/null; then
+              ref=$(gh api "repos/$REPO/pulls/$number" --jq '.head.ref')
+              gh api --method DELETE "repos/$REPO/git/refs/heads/$ref" >/dev/null \
+                || echo "::warning::merged #$number but could not delete $ref."
+            else
+              # Losing a race with another merge in the same run is normal and
+              # is not a reason to fail the workflow: the next trigger retries.
+              #
+              # One case never resolves on a retry: a pull request that edits
+              # .github/workflows is refused outright with "refusing to allow a
+              # GitHub App to create or update workflow ... without workflows
+              # permission", and no permissions: block can grant that scope to a
+              # workflow token. Action bumps have to be merged by a person.
+              echo "::warning::merging #$number did not succeed; it will be retried on the next run."
+            fi
+          done <<<"$open"
