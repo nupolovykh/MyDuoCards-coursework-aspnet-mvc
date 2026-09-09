@@ -5,3 +5,7 @@ updates:
     target-branch: "security-features-main"
     schedule:
       interval: "weekly"
+    groups:
+      entity-framework-core:
+        patterns:
+          - "Microsoft.EntityFrameworkCore*"
