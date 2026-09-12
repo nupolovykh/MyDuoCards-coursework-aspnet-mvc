@@ -1,7 +1,58 @@
+# Version updates land on `deps`, never on main. Each pull request merges itself
+# once CI is green on that exact commit; the collected result reaches main
+# through one promotion pull request that a human merges.
+#
+# 99 means "no limit". Everything lands on `deps`, and an update that fails CI
+# stays an open pull request against that branch, where it blocks nothing. The
+# key cannot be dropped to mean unlimited: omitting it applies Dependabot's
+# default of 5, and 0 switches version updates off altogether.
 version: 2
+
 updates:
   - package-ecosystem: "nuget"
     directory: "/MyDuoCards"
-    target-branch: "security-features-main"
     schedule:
       interval: "weekly"
+    target-branch: "deps"
+    open-pull-requests-limit: 99
+    labels: ["dependencies"]
+    commit-message:
+      prefix: "build(deps)"
+
+    # The EntityFrameworkCore packages have to move together. This project pins
+    # five of them at the same version, and they carry version ranges on each
+    # other: bumping one alone leaves the rest below what it now demands, and
+    # the restore either warns loudly or, where NU1605 is an error, fails.
+    # Ungrouped that is not one blocked update — it is a queue that cannot
+    # drain, because each pull request in it breaks in the same way. Measured
+    # in Marketplace-coursework-wpf-mvvm, which has the identical shape; here
+    # it is applied before it can happen rather than after.
+    #
+    # CodeGeneration.Design is in the same group because it depends on EF Core
+    # and pulls the whole family forward with it.
+    groups:
+      microsoft-data-and-hosting:
+        patterns:
+          - "Microsoft.EntityFrameworkCore*"
+          - "Microsoft.Extensions.*"
+          - "Microsoft.VisualStudio.Web.CodeGeneration*"
+
+    # Not caution — a target-framework fact. This project is net8.0, and
+    # Microsoft.EntityFrameworkCore 10.x ships net10.0 assets only, so a 10.x
+    # bump cannot restore however it is grouped. Written as `>= 10.0.0` rather
+    # than as a major-update filter so that 8 -> 9 still lands, and scoped to
+    # EntityFrameworkCore alone because Microsoft.Extensions 10.x still ships
+    # net8.0. Remove this when the project is retargeted.
+    ignore:
+      - dependency-name: "Microsoft.EntityFrameworkCore*"
+        versions: [">= 10.0.0"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "deps"
+    open-pull-requests-limit: 99
+    labels: ["dependencies"]
+    commit-message:
+      prefix: "ci(actions)"
