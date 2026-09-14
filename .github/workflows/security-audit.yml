@@ -18,8 +18,10 @@ on:
     - cron: "41 5 * * 1"
   workflow_dispatch:
 
+# GITHUB_TOKEN is enough here: the only thing this writes is the report issue.
 permissions:
   contents: read
+  issues: write
 
 jobs:
   nuget:
@@ -42,12 +44,51 @@ jobs:
       # in the project file mentions them, and Dependabot cannot bump them
       # directly either — the fix is always a bump of whatever pulls them in.
       - name: Audit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           report=$(dotnet list MyDuoCards/MyDuoCards.sln package --vulnerable --include-transitive)
           printf '%s\n' "$report"
+
+          # The finding is reported as an issue, not by failing the run.
+          #
+          # This workflow runs on a schedule against the default branch, so its
+          # check run lands on whatever commit that branch points at. Failing
+          # would pin a red mark to an unrelated commit — permanently, because a
+          # check run cannot be deleted and the mark outlives the fix. An issue
+          # is addressed to the repository, GitHub emails it the same way, and it
+          # closes itself on the first clean run.
+          marker="<!-- vulnerable-dependencies -->"
+          issues=$(gh api --paginate "repos/$GITHUB_REPOSITORY/issues?state=open&per_page=100" \
+            --jq '.[] | select(.pull_request | not) | "\(.number)\t\(.body // "")"' 2>/dev/null || true)
+          issue=$(awk -v m="$marker" -F'\t' 'index($0, m) {print $1; exit}' <<<"$issues")
+
           if grep -q 'has the following vulnerable packages' <<<"$report"; then
-            echo "::error::Vulnerable packages are referenced on the default branch."
+            body="The solution references packages with published advisories.
+
+          \`\`\`
+          ${report}
+          \`\`\`
+
+          Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+
+          ${marker}"
+            if [ -n "$issue" ]; then
+              gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/${issue}" -f "body=${body}" >/dev/null \
+                && { echo "::warning::Vulnerable packages referenced; updated issue #${issue}."; exit 0; }
+            else
+              issue=$(gh api "repos/$GITHUB_REPOSITORY/issues" -f "title=Vulnerable dependencies" \
+                -f "body=${body}" --jq '.number' 2>/dev/null) \
+                && { echo "::warning::Vulnerable packages referenced; opened issue #${issue}."; exit 0; }
+            fi
+            echo "::error::Vulnerable packages are referenced and the report could not be filed."
             exit 1
           fi
+
           echo "No vulnerable packages reported."
+          if [ -n "$issue" ]; then
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/${issue}" \
+              -f state=closed -f state_reason=completed >/dev/null 2>&1 || true
+            echo "Closed issue #${issue}."
+          fi
