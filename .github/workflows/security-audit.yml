@@ -1,0 +1,53 @@
+name: Security audit
+
+# Deliberately NOT part of CI.
+#
+# `dotnet list package --vulnerable` answers a question about the global advisory
+# database, not about the commit under test. A newly published advisory turns
+# every open pull request red at once — including the very bump that fixes it —
+# and in a repository where green CI is what merges updates, that stops the
+# updates from landing exactly when they matter most. Here it reports on a
+# schedule and blocks nothing.
+#
+# It is also the one workflow that speaks about `main` itself. Dependabot's
+# security updates ignore `target-branch` and never enter the `deps` flow, so a
+# red run here is the signal that main needs a human.
+
+on:
+  schedule:
+    - cron: "41 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nuget:
+    name: dotnet list package --vulnerable
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore MyDuoCards/MyDuoCards.sln
+
+      # `dotnet list package` reports findings on stdout and still exits zero, so
+      # the exit code says nothing and the output has to be read. Transitive
+      # packages are included because that is where most advisories live: nothing
+      # in the project file mentions them, and Dependabot cannot bump them
+      # directly either — the fix is always a bump of whatever pulls them in.
+      - name: Audit
+        run: |
+          set -euo pipefail
+          report=$(dotnet list MyDuoCards/MyDuoCards.sln package --vulnerable --include-transitive)
+          printf '%s\n' "$report"
+          if grep -q 'has the following vulnerable packages' <<<"$report"; then
+            echo "::error::Vulnerable packages are referenced on the default branch."
+            exit 1
+          fi
+          echo "No vulnerable packages reported."
