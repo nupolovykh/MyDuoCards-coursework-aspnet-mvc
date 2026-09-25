@@ -2,17 +2,28 @@
 # once CI is green on that exact commit; the collected result reaches main
 # through one promotion pull request that a human merges.
 #
+# Monthly, one pull request per directory for every minor and patch bump, and
+# one pull request per major. Minor and patch bumps rarely break anything, so
+# grouping them costs little and cuts the noise to one pull request a month.
+# Majors stay separate, so a major that breaks the build blocks only itself.
+# Packages that must move together get their own group across all update types;
+# a package matches the first group that lists it.
+#
 # 99 means "no limit". Everything lands on `deps`, and an update that fails CI
 # stays an open pull request against that branch, where it blocks nothing. The
 # key cannot be dropped to mean unlimited: omitting it applies Dependabot's
 # default of 5, and 0 switches version updates off altogether.
+#
+# Dependabot security updates are switched off for this repository: they always
+# target main and would bypass `deps`. security-audit.yml reports advisories
+# instead — see docs/dependency-updates.md.
 version: 2
 
 updates:
   - package-ecosystem: "nuget"
     directory: "/MyDuoCards"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     target-branch: "deps"
     open-pull-requests-limit: 99
     labels: ["dependencies"]
@@ -36,6 +47,9 @@ updates:
           - "Microsoft.EntityFrameworkCore*"
           - "Microsoft.Extensions.*"
           - "Microsoft.VisualStudio.Web.CodeGeneration*"
+      minor-and-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
 
     # Not caution — a target-framework fact. This project is net8.0, and
     # Microsoft.EntityFrameworkCore 10.x ships net10.0 assets only, so a 10.x
@@ -50,9 +64,13 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     target-branch: "deps"
     open-pull-requests-limit: 99
     labels: ["dependencies"]
     commit-message:
       prefix: "ci(actions)"
+    groups:
+      minor-and-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
