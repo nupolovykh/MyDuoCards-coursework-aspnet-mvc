@@ -44,8 +44,8 @@ issue, which it closes itself on the first run that is not blocked.
 
 Monthly. Per directory, one pull request for every minor and patch bump and one
 per major; the EntityFrameworkCore family below is its own group across all
-update types and is listed first, so its members never land in
-`minor-and-patch`. `security-audit.yml` writes its findings into the run
+update types, and `minor-and-patch` excludes its patterns, so its members never
+land there. `security-audit.yml` writes its findings into the run
 summary, never an issue. Dependabot security updates are switched off: they
 target `main` directly and would bypass `deps`.
 
