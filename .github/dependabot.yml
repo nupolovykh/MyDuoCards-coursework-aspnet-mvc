@@ -6,8 +6,9 @@
 # one pull request per major. Minor and patch bumps rarely break anything, so
 # grouping them costs little and cuts the noise to one pull request a month.
 # Majors stay separate, so a major that breaks the build blocks only itself.
-# Packages that must move together get their own group across all update types;
-# a package matches the first group that lists it.
+# Packages that must move together get their own group across all update types,
+# and minor-and-patch excludes their patterns, so two groups never raise the
+# same line in one scan (the second pull request would conflict).
 #
 # 99 means "no limit". Everything lands on `deps`, and an update that fails CI
 # stays an open pull request against that branch, where it blocks nothing. The
@@ -49,6 +50,7 @@ updates:
           - "Microsoft.VisualStudio.Web.CodeGeneration*"
       minor-and-patch:
         patterns: ["*"]
+        exclude-patterns: ["Microsoft.EntityFrameworkCore*", "Microsoft.Extensions.*", "Microsoft.VisualStudio.Web.CodeGeneration*"]
         update-types: ["minor", "patch"]
 
     # Not caution — a target-framework fact. This project is net8.0, and
